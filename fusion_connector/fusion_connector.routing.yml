@@ -1,0 +1,42 @@
+route_callbacks:
+    - '\Drupal\fusion_connector\Routing\FusionRoutes::routes'
+
+fusion_connector.settings:
+  path: '/admin/config/services/fusion_connector'
+  defaults:
+    _form: '\Drupal\fusion_connector\Form\FusionConnectorForm'
+    _title: 'Fusion Connector'
+  requirements:
+    _permission: 'administer site configuration'
+
+fusion_connector.settings.languages:
+  path: '/admin/config/services/fusion_connector/languages'
+  defaults:
+    _form: '\Drupal\fusion_connector\Form\FusionConnectorLanguageAccessForm'
+    _title: 'Languages Access'
+  requirements:
+    _permission: 'administer site configuration'
+
+fusion_connector.fusion:
+    path: '/fusion'
+    defaults:
+        _controller: '\Drupal\fusion_connector\Controller\FusionConnectorEntryPoint::index'
+        _title: 'Fusion Connector'
+    requirements:
+        _permission: 'access content'
+
+fusion_connector.settings.edit_fieldsaccess_form:
+    path: '/admin/config/services/fusion_connector/access/{bundle}/{entity_type_id}'
+    defaults:
+        _form: '\Drupal\fusion_connector\Form\FusionConnectorFieldsAccessForm'
+        _title: 'Fusion connector edit fields access'
+    requirements:
+        _permission: 'administer site configuration'
+
+fusion_connector.settings.edit_languagetypeaccess_form:
+  path: '/admin/config/services/fusion_connector/type_language_access/{bundle}/{entity_type_id}'
+  defaults:
+    _form: '\Drupal\fusion_connector\Form\FusionConnectorLanguageTypeAccessForm'
+    _title: 'Fusion connector edit fields access'
+  requirements:
+    _permission: 'administer site configuration'

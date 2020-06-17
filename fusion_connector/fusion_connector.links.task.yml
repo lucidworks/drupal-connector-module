@@ -1,0 +1,10 @@
+fusion_connector.settings:
+  route_name: fusion_connector.settings
+  base_route: fusion_connector.settings
+  title: 'Entity Access'
+
+# Define a "Fusion Connector tab".
+fusion_connector.settings.languages:
+  deriver: 'Drupal\fusion_connector\Plugin\Derivative\LanguageAccessLocalTask'
+
+

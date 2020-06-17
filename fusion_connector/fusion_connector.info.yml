@@ -1,0 +1,8 @@
+name: 'Fusion Connector'
+type: module
+description: 'Fusion connector Implementation'
+core: 8.x
+package: 'Web services'
+configure: fusion_connector.settings
+dependencies:
+    - jsonapi

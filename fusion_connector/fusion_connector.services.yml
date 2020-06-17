@@ -1,0 +1,28 @@
+parameters:
+    fusion_connector.base_path: /fusion
+
+services:
+  # Event subscribers.
+  fusion_connector.config_subscriber:
+    class: Drupal\fusion_connector\EventSubscriber\ConfigSubscriber
+    arguments: ['@kernel', '@router.builder']
+    tags:
+      - { name: event_subscriber }
+
+  fusion_connector.resource_response.subscriber:
+      class: Drupal\fusion_connector\EventSubscriber\ResourceResponseSubscriber
+      arguments: ['@jsonapi.serializer']
+      tags:
+          - { name: event_subscriber }
+
+  serializer.normalizer.resource_object.fusion_connector:
+    class: Drupal\jsonapi\Normalizer\ImpostorFrom\fusion_connector\ResourceObjectNormalizerImpostor
+    decorates: serializer.normalizer.resource_object.jsonapi
+    arguments: ['@jsonapi.normalization_cacher']
+  serializer.normalizer.entity_access_exception.fusion_connector:
+      class: Drupal\jsonapi\Normalizer\ImpostorFrom\fusion_connector\EntityAccessDeniedHttpExceptionNormalizerImpostor
+      decorates: serializer.normalizer.entity_access_exception.jsonapi
+      arguments: ['@current_user']
+      tags:
+          # This must have a higher priority than the 'serializer.normalizer.http_exception.jsonapi' to take effect.
+          - { name: jsonapi_normalizer, priority: 1 }

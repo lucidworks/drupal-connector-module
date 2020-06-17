@@ -1,0 +1,13 @@
+{
+    "name": "fusion_connector",
+    "type": "drupal-module",
+    "description": "Fusion Connector Implementation",
+    "keywords": [
+    ],
+    "homepage": "https://www.drupal.org/project/fusion_connector",
+    "minimum-stability": "dev",
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/fusion_connector",
+        "source": "https://github.com/lolaent/fusion_connector"
+    }
+}

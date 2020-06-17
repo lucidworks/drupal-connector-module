@@ -1,0 +1,6 @@
+# Define a "Fusion Connector tab".
+fusion_connector.settings:
+  route_name: fusion_connector.settings
+  description: "Configure what to expose through the fusion endpoint."
+  title: 'Fusion Connector Settings'
+  parent: system.admin_config_services

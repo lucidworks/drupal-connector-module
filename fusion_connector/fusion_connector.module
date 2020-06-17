@@ -1,0 +1,51 @@
+<?php
+
+/**
+ * @file
+ * Contains fusion_connector.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function fusion_connector_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+
+    // Main module help for the fusion_connector module.
+    case 'fusion_connector.settings':
+      $output = '';
+      $output .= '<p>' . t('You can filter the content type entities which will be exposed for indexing based on the available user roles.') . '</p>';
+      $output .= '<p>' . t('If one of the column has no clickable checkboxes available, please check the "access content" permission for that user role".') . '</p>';
+      $output .= '<p>' . t('The administrator roles will see all the checked content types.') . '</p>';
+      return $output;
+    case 'fusion_connector.settings.edit_fieldsaccess_form':
+      $output = '';
+      $output .= '<p>' . t('You can filter the specific fields for a content type entity.') . '</p>';
+      $output .= '<p>' . t('If the DISABLED checkbox is checked, it means that the field will not appear in the JSON:API file.') . '</p>';
+      return $output;
+    case 'fusion_connector.settings.languages':
+      $output = '';
+      $output .= '<p>' . t('You can disable content exposure for a specific language ') . '</p>';
+      $output .= '<p>' . t('If the DISABLED checkbox is checked, it means that no entity will appear for that language ') . '</p>';
+      return $output;
+    case 'fusion_connector.settings.edit_languagetypeaccess_form':
+      $output = '';
+      $output .= '<p>' . t('You can disable content exposure for a specific language for a specific entity type.') . '</p>';
+      $output .= '<p>' . t('If the DISABLED checkbox is checked, it means that no content will appear for that language, for that type') . '</p>';
+      return $output;
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function fusion_connector_theme() {
+  return [
+    'fusion_connector_template' => [
+      'render element' => 'children',
+    ],
+  ];
+}
