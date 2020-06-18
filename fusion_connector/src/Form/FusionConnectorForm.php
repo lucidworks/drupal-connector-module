@@ -122,8 +122,10 @@ class FusionConnectorForm extends ConfigFormBase {
     $types['taxonomy_vocabulary'] = \Drupal::service("entity_type.bundle.info")
       ->getBundleInfo('taxonomy_vocabulary');
     $user_role_access = $config->get('user_role_access');
+    $authenticated_role = $this->roleStorage->load(
+      RoleInterface::AUTHENTICATED_ID
+    );
 
-    $authenticated_role = $this->roleStorage->load(RoleInterface::AUTHENTICATED_ID);
     foreach ($types as $bundle => $entities) {
       if (count($entities)) {
         foreach ($entities as $type => $label) {
@@ -167,29 +169,55 @@ class FusionConnectorForm extends ConfigFormBase {
                 )) {
                 $row[$userRoleName]['data']['#attributes'] = ['disabled' => 'true'];
               }
-              if ($userRole->isAdmin() || (!$userRole->hasPermission(
-                    'access content'
-                  ) && $authenticated_role->hasPermission(
-                    'access content'
-                  ))) {
+              if ($userRole->isAdmin() || ($authenticated_role->hasPermission(
+                  'access content'
+                ))) {
                 if ($userRole->isAdmin()) {
                   $row[$userRoleName]['data']['#checked'] = 1;
                   $row[$userRoleName]['data']['#default_value'] = 1;
                 }
                 else {
                   if ($userRole->getOriginalId() != 'anonymous') {
-                    $row[$userRoleName]['data']['#checked'] = 1;
-                    $row[$userRoleName]['data']['#default_value'] = 1;
+
+
                     if ($userRole->getOriginalId(
                       ) != $authenticated_role->getOriginalId()) {
-                      $row[$userRoleName]['data']['#states'] = [
-                        'visible' => [
-                          ':input[name="fusion_connector_user_roles[' . $type . '][' . $authenticated_role->getOriginalId(
-                          ) . ']"]' => [
-                            'checked' => TRUE,
+
+                      if (!$userRole->hasPermission(
+                        'access content'
+                      )) {
+                        $row[$userRoleName]['data']['#states'] = [
+                          'visible' => [
+                            ':input[name="fusion_connector_user_roles[' . $type . '][' . $authenticated_role->getOriginalId(
+                            ) . ']"]' => [
+                              'checked' => TRUE,
+                            ],
                           ],
-                        ],
-                      ];
+                        ];
+                        $row[$userRoleName]['data']['#checked'] = 1;
+                        $row[$userRoleName]['data']['#default_value'] = 1;
+                      }
+                      else {
+                        $row[$userRoleName]['data']['#states'] = [
+                          'disabled' => [
+                            ':input[name="fusion_connector_user_roles[' . $type . '][' . $authenticated_role->getOriginalId(
+                            ) . ']"]' => [
+                              'checked' => TRUE,
+                            ],
+                          ],
+                        ];
+                        if (!in_array(
+                          $type,
+                          $user_role_access[$userRoleName]
+                        )) {
+                          $row[$userRoleName]['data']['#states']['checked'] = [
+                            ':input[name="fusion_connector_user_roles[' . $type . '][' . $authenticated_role->getOriginalId(
+                            ) . ']"]' => [
+                              'checked' => TRUE,
+                            ],
+                          ];
+                        }
+                      }
                     }
                   }
                 }
@@ -277,7 +305,9 @@ class FusionConnectorForm extends ConfigFormBase {
 
     //add manually all the needed access to the entities for the admin roles, because they are disabled
     $userRoles = $this->roleStorage->loadMultiple();
-    $authenticated_role = $this->roleStorage->load(RoleInterface::AUTHENTICATED_ID);
+    $authenticated_role = $this->roleStorage->load(
+      RoleInterface::AUTHENTICATED_ID
+    );
     if (count($userRoles)) {
       foreach ($userRoles as $userRoleName => $userRole) {
         if ($userRole->isAdmin()) {
