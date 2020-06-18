@@ -98,7 +98,8 @@ class EntityAccessChecker extends JsonApiEntityAccessChecker {
       \Drupal::request()->getRequestUri(),
       $container->getParameter('fusion_connector.base_path')
     )) {
-      if (in_array($entity->language()->getId(), $disabledLanguages)) {
+      //disable the access to an entity if the langguage is disabled for that entity type of the current language is disabled
+      if (in_array($entity->language()->getId(), $disabledLanguages) || in_array($container->get('language_manager')->getCurrentLanguage()->getId(), $disabledLanguages)) {
         $access = $access->andIf(new AccessResultForbidden());
         $entity->addCacheableDependency($access);
 
