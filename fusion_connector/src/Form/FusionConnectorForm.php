@@ -7,7 +7,6 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\ProxyClass\Routing\RouteBuilder;
-use Drupal\user\Entity\Role;
 use Drupal\user\RoleInterface;
 use Drupal\user\RoleStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -192,6 +191,9 @@ class FusionConnectorForm extends ConfigFormBase {
                             ) . ']"]' => [
                               'checked' => TRUE,
                             ],
+                            ':input[name="fusion_connector_types[' . $type . ']"]' => [
+                              'checked' => TRUE,
+                            ],
                           ],
                         ];
                         $row[$userRoleName]['data']['#checked'] = 1;
@@ -205,6 +207,11 @@ class FusionConnectorForm extends ConfigFormBase {
                               'checked' => TRUE,
                             ],
                           ],
+                          'visible' => [
+                            ':input[name="fusion_connector_types[' . $type . ']"]' => [
+                              'checked' => TRUE,
+                            ],
+                          ],
                         ];
                         if (!in_array(
                           $type,
@@ -213,6 +220,9 @@ class FusionConnectorForm extends ConfigFormBase {
                           $row[$userRoleName]['data']['#states']['checked'] = [
                             ':input[name="fusion_connector_user_roles[' . $type . '][' . $authenticated_role->getOriginalId(
                             ) . ']"]' => [
+                              'checked' => TRUE,
+                            ],
+                            ':input[name="fusion_connector_types[' . $type . ']"]' => [
                               'checked' => TRUE,
                             ],
                           ];
