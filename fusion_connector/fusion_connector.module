@@ -5,7 +5,10 @@
  * Contains fusion_connector.module.
  */
 
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * Implements hook_help().
@@ -16,24 +19,42 @@ function fusion_connector_help($route_name, RouteMatchInterface $route_match) {
     // Main module help for the fusion_connector module.
     case 'fusion_connector.settings':
       $output = '';
-      $output .= '<p>' . t('You can filter the content type entities which will be exposed for indexing based on the available user roles.') . '</p>';
-      $output .= '<p>' . t('If one of the column has no clickable checkboxes available, please check the "access content" permission for that user role".') . '</p>';
-      $output .= '<p>' . t('The administrator roles will see all the checked content types.') . '</p>';
+      $output .= '<p>' . t(
+          'You can filter the content type entities which will be exposed for indexing based on the available user roles.'
+        ) . '</p>';
+      $output .= '<p>' . t(
+          'If one of the column has no clickable checkboxes available, please check the "access content" permission for that user role".'
+        ) . '</p>';
+      $output .= '<p>' . t(
+          'The administrator roles will see all the checked content types.'
+        ) . '</p>';
       return $output;
     case 'fusion_connector.settings.edit_fieldsaccess_form':
       $output = '';
-      $output .= '<p>' . t('You can filter the specific fields for a content type entity.') . '</p>';
-      $output .= '<p>' . t('If the DISABLED checkbox is checked, it means that the field will not appear in the JSON:API file.') . '</p>';
+      $output .= '<p>' . t(
+          'You can filter the specific fields for a content type entity.'
+        ) . '</p>';
+      $output .= '<p>' . t(
+          'If the DISABLED checkbox is checked, it means that the field will not appear in the JSON:API file.'
+        ) . '</p>';
       return $output;
     case 'fusion_connector.settings.languages':
       $output = '';
-      $output .= '<p>' . t('You can disable content exposure for a specific language ') . '</p>';
-      $output .= '<p>' . t('If the DISABLED checkbox is checked, it means that no entity will appear for that language ') . '</p>';
+      $output .= '<p>' . t(
+          'You can disable content exposure for a specific language '
+        ) . '</p>';
+      $output .= '<p>' . t(
+          'If the DISABLED checkbox is checked, it means that no entity will appear for that language '
+        ) . '</p>';
       return $output;
     case 'fusion_connector.settings.edit_languagetypeaccess_form':
       $output = '';
-      $output .= '<p>' . t('You can disable content exposure for a specific language for a specific entity type.') . '</p>';
-      $output .= '<p>' . t('If the DISABLED checkbox is checked, it means that no content will appear for that language, for that type') . '</p>';
+      $output .= '<p>' . t(
+          'You can disable content exposure for a specific language for a specific entity type.'
+        ) . '</p>';
+      $output .= '<p>' . t(
+          'If the DISABLED checkbox is checked, it means that no content will appear for that language, for that type'
+        ) . '</p>';
       return $output;
     default:
   }
@@ -48,4 +69,65 @@ function fusion_connector_theme() {
       'render element' => 'children',
     ],
   ];
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Adds mouse-over hints on the Permissions page to display
+ * language-independent machine names and module base names.
+ *
+ * @see \Drupal\user\Form\UserPermissionsForm::buildForm()
+ */
+function fusion_connector_form_user_admin_permissions_alter(
+  &$form,
+  FormStateInterface $form_state
+) {
+
+  $role_names = [];
+  $role_permissions = [];
+  $admin_roles = [];
+  $roles = \Drupal::entityTypeManager()->getStorage('user_role')->loadMultiple(
+  );
+  foreach ($roles as $role_name => $role) {
+    // Retrieve role names for columns.
+    $role_names[$role_name] = $role->label();
+    // Fetch permissions for the roles.
+    $role_permissions[$role_name] = $role->getPermissions();
+    $admin_roles[$role_name] = $role->isAdmin();
+  }
+  foreach (Element::children($form['permissions']) as $perm) {
+    if (substr_count($perm, 'view fusion_connector')) {
+      foreach ($role_names as $rid => $name) {
+        // Show a column of disabled but checked checkboxes.
+        if ($admin_roles[$rid]) {
+          $form['permissions'][$perm][$rid]['#disabled'] = TRUE;
+          $form['permissions'][$perm][$rid]['#default_value'] = TRUE;
+        }
+        else {
+          //if there is no access content permission, then enable the Fusion Connector checkboxes only if
+          //the access content permission is checked for the current user role or for the authenticated one
+          if (!in_array('access content', $role_permissions[$rid])) {
+            if ($rid != AccountInterface::AUTHENTICATED_ROLE) {
+              $visibleConditions = [
+                [
+                  ':input[name="' . $rid . '[access content]"]' => ['checked' => TRUE],
+                ],
+                'xor',
+                [
+                  ':input[name="' . AccountInterface::AUTHENTICATED_ROLE . '[access content]"]' => ['checked' => TRUE],
+                ],
+              ];
+            }
+            else {
+              $visibleConditions = [
+                ':input[name="' . $rid . '[access content]"]' => ['checked' => TRUE],
+              ];
+            }
+            $form['permissions'][$perm][$rid]['#states']['visible'] = $visibleConditions;
+          }
+        }
+      }
+    }
+  }
 }

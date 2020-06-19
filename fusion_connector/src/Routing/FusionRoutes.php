@@ -8,14 +8,12 @@ use Drupal\jsonapi\Routing\Routes;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\RouteCollection;
 
-class FusionRoutes extends Routes
-{
+class FusionRoutes extends Routes {
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container)
-  {
+  public static function create(ContainerInterface $container) {
     return new static(
       $container->get('jsonapi.resource_type.repository'),
       $container->getParameter('authentication_providers'),
@@ -26,31 +24,38 @@ class FusionRoutes extends Routes
   /**
    * {@inheritdoc}
    */
-  public function routes()
-  {
+  public function routes() {
     $routes = new RouteCollection();
     $upload_routes = new RouteCollection();
-    $config = Drupal::config('fusion_connector.settings');
-    $enabledEntityTypeIds = $config->get('enabled_entities') ?? [];
+
     // JSON:API's routes: entry point + routes for every resource type.
-    $resources = array_filter(
-      $this->resourceTypeRepository->all(),
-      function ($resource) use ($enabledEntityTypeIds) {
-        return in_array($resource->getBundle(), $enabledEntityTypeIds);
-      }
-    );
+    $resources = $this->resourceTypeRepository->getAllAvailableResourceTypes();
 
     //get all the relatable resource types for the selected entities
     $selectedResourcesTypeNames = [];
     foreach ($resources as $resource) {
-      $this->getRecoursiveRelatableResourceTypes($resource, $selectedResourcesTypeNames, $resources);
+      $this->getRecursiveRelatableResourceTypes(
+        $resource,
+        $selectedResourcesTypeNames,
+        $resources
+      );
     }
 
     foreach ($resources as $resource_type) {
-      $routes->addCollection(static::getRoutesForResourceType($resource_type, $this->jsonApiBasePath));
-      $upload_routes->addCollection(static::getFileUploadRoutesForResourceType($resource_type, $this->jsonApiBasePath));
+      $routes->addCollection(
+        static::getRoutesForResourceType($resource_type, $this->jsonApiBasePath)
+      );
+      $upload_routes->addCollection(
+        static::getFileUploadRoutesForResourceType(
+          $resource_type,
+          $this->jsonApiBasePath
+        )
+      );
     }
-    $routes->add('fusion.resource_list', static::getEntryPointRoute($this->jsonApiBasePath));
+    $routes->add(
+      'fusion.resource_list',
+      static::getEntryPointRoute($this->jsonApiBasePath)
+    );
 
     // Require the JSON:API media type header on every route, except on file
     // upload routes, where we require `application/octet-stream`.
@@ -63,7 +68,7 @@ class FusionRoutes extends Routes
     $routes->addOptions(['_auth' => $this->providerIds]);
 
     // Flag every route as belonging to the JSON:API module.
-    $routes->addDefaults([static::JSON_API_ROUTE_FLAG_KEY => true]);
+    $routes->addDefaults([static::JSON_API_ROUTE_FLAG_KEY => TRUE]);
 
     // All routes serve only the JSON:API media type.
     $routes->addRequirements(['_format' => 'api_json']);
@@ -73,20 +78,29 @@ class FusionRoutes extends Routes
 
   /**
    * Get all the relatable resource types for the selected entities
+   *
    * @param ResourceType $resource
-   * @param array $selectedResourcesTypeNames
-   * @param array $resources
+   * @param array        $selectedResourcesTypeNames
+   * @param array        $resources
    */
-  public function getRecoursiveRelatableResourceTypes($resource, &$selectedResourcesTypeNames, &$resources)
-  {
+  public function getRecursiveRelatableResourceTypes(
+    $resource,
+    &$selectedResourcesTypeNames,
+    &$resources
+  ) {
     $includeRelatableResourceTypes = $resource->getRelatableResourceTypes();
     if (count($includeRelatableResourceTypes)) {
       foreach ($includeRelatableResourceTypes as $includeRelatableResourceTypeArray) {
         foreach ($includeRelatableResourceTypeArray as $includeRelatableResourceType) {
-          if (!in_array($includeRelatableResourceType->getTypeName(), $selectedResourcesTypeNames)) {
-            $selectedResourcesTypeNames[] = $includeRelatableResourceType->getTypeName();
-            $resources[$includeRelatableResourceType->getTypeName()] = $includeRelatableResourceType;
-            $this->getRecoursiveRelatableResourceTypes(
+          if (!in_array(
+            $includeRelatableResourceType->getTypeName(),
+            $selectedResourcesTypeNames
+          )) {
+            $selectedResourcesTypeNames[] = $includeRelatableResourceType->getTypeName(
+            );
+            $resources[$includeRelatableResourceType->getTypeName(
+            )] = $includeRelatableResourceType;
+            $this->getRecursiveRelatableResourceTypes(
               $includeRelatableResourceType,
               $selectedResourcesTypeNames,
               $resources
@@ -102,7 +116,7 @@ class FusionRoutes extends Routes
    *
    * @param ResourceType $resource_type
    *   The resource type for which the route collection should be created.
-   * @param string $route_type
+   * @param string       $route_type
    *   The route type. E.g. 'individual' or 'collection'.
    *
    * @return string
@@ -120,7 +134,7 @@ class FusionRoutes extends Routes
    *
    * @param ResourceType $resource_type
    *   The resource type for which the route collection should be created.
-   * @param string $route_type
+   * @param string       $route_type
    *   The route type. E.g. 'individual' or 'collection'.
    *
    * @return string

@@ -1,0 +1,2 @@
+permission_callbacks:
+  - Drupal\fusion_connector\FusionConnectorPermissions::permissions
