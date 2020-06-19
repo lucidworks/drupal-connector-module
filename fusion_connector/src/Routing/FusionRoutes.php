@@ -34,7 +34,7 @@ class FusionRoutes extends Routes {
     //get all the relatable resource types for the selected entities
     $selectedResourcesTypeNames = [];
     foreach ($resources as $resource) {
-      $this->getRecoursiveRelatableResourceTypes(
+      $this->getRecursiveRelatableResourceTypes(
         $resource,
         $selectedResourcesTypeNames,
         $resources
@@ -83,7 +83,7 @@ class FusionRoutes extends Routes {
    * @param array        $selectedResourcesTypeNames
    * @param array        $resources
    */
-  public function getRecoursiveRelatableResourceTypes(
+  public function getRecursiveRelatableResourceTypes(
     $resource,
     &$selectedResourcesTypeNames,
     &$resources
@@ -100,7 +100,7 @@ class FusionRoutes extends Routes {
             );
             $resources[$includeRelatableResourceType->getTypeName(
             )] = $includeRelatableResourceType;
-            $this->getRecoursiveRelatableResourceTypes(
+            $this->getRecursiveRelatableResourceTypes(
               $includeRelatableResourceType,
               $selectedResourcesTypeNames,
               $resources
