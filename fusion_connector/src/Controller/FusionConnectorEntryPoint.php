@@ -11,8 +11,8 @@ use Drupal\jsonapi\JsonApiResource\NullIncludedData;
 use Drupal\jsonapi\JsonApiResource\Link;
 use Drupal\jsonapi\JsonApiResource\ResourceObjectData;
 use Drupal\jsonapi\ResourceResponse;
-use Drupal\jsonapi\ResourceType\ResourceType;
 use Drupal\user\Entity\User;
+use Drupal\jsonapi\ResourceType\ResourceType;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 /**
@@ -33,40 +33,15 @@ class FusionConnectorEntryPoint extends EntryPoint {
    *   The response object.
    */
   public function index() {
-    $config = \Drupal::config('fusion_connector.settings');
-    $disabledLanguages = $config->get('disabled_languages');
-    $currentLanguage = $this->languageManager()->getCurrentLanguage()->getId();
 
     //filter the available entities for the current user
-    $fusionUserRoleAccess = $config->get('user_role_access');
+    $resources = $this->resourceTypeRepository->getAllAvailableResourceTypes();
 
-    $userRoles = $this->user->getRoles();
-    $enabledEntityTypeIds = [];
-    foreach ($userRoles as $userRole) {
-      if (is_array($fusionUserRoleAccess[$userRole])) {
-        $enabledEntityTypeIds = $enabledEntityTypeIds + $fusionUserRoleAccess[$userRole];
-      }
-    }
     $cacheability = (new CacheableMetadata())
       ->addCacheContexts(['user.roles:authenticated'])
       ->addCacheTags(['fusion_resource_types']);
-
     // Only build URLs for exposed resources.
-    if (!in_array($currentLanguage, $disabledLanguages)) {
-      $resources = array_filter(
-        $this->resourceTypeRepository->all(),
-        function ($resource) use ($enabledEntityTypeIds, $config) {
-          $resource_config_id = sprintf('%s--%s', $resource->getEntityTypeId(), $resource->getBundle());
-          $disabledLanguages = $config->get('disabled_entity_type_languages')[$resource_config_id] ?? [];
 
-          return !$resource->isInternal() &&
-            in_array($resource->getBundle(), $enabledEntityTypeIds) &&
-            !in_array($this->languageManager->getCurrentLanguage()->getId(), $disabledLanguages);
-        }
-      );
-    } else {
-      $resources = [];
-    }
     $self_link = new Link(
       new CacheableMetadata(),
       Url::fromRoute('fusion.resource_list'),
