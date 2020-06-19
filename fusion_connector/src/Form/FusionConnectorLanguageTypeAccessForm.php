@@ -117,15 +117,19 @@ class FusionConnectorLanguageTypeAccessForm extends ConfigFormBase
     }
 
     $header = [
-      t('Choose what languages to disable for '.$resource_type->getTypeName()),
+      t('Language'),
       [
-        'data' => t('Disable this language for '.$resource_type->getTypeName(). '?'),
+        'data' => t('Disable indexing'),
         'class' => ['checkbox'],
       ],
     ];
     $form['fusion_connector_entity_type_languages'] = [
       '#type' => 'table',
       '#header' => $header,
+      '#caption' => $this->t(
+        'Choose what languages to disable for %resource_type:',
+        ['%resource_type' => $resource_type->getTypeName()]
+      ),
       '#sticky' => true,
     ];
 

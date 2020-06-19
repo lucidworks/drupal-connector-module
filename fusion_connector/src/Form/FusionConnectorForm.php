@@ -74,7 +74,7 @@ class FusionConnectorForm extends ConfigFormBase {
     $multiLanguage = count($this->languageManager->getLanguages()) > 1;
 
     $header = [
-      'disabled_entities' => t('Disabled'),
+      'disabled_entities' => t('Disable indexing'),
     ];
 
     $header['operations'] = $this->t('Operations');

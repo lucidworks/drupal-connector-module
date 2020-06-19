@@ -128,7 +128,7 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase {
 
     $form['fusion_connector_fieldsaccess'] = [
       '#type'    => 'table',
-      '#header'  => [$this->t('Disabled'), $this->t('Field name')],
+      '#header'  => [$this->t('Field name'), $this->t('Disabled')],
       '#caption' => $this->t(
         'You are editing the fields filtering for %item.',
         ['%item' => $entity_type_id]
@@ -139,6 +139,7 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase {
     if (count($fieldsDefinition)) {
       foreach ($fieldsDefinition as $field) {
         $form['fusion_connector_fieldsaccess'][$field] = [
+          'label' => ['#plain_text' => $field],
           [
             '#type'          => 'checkbox',
             '#default_value' => in_array(
@@ -147,7 +148,7 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase {
             ) ? 1 : 0,
 
           ],
-          'label' => ['#plain_text' => $field],
+
         ];
       }
     }
