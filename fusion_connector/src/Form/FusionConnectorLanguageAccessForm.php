@@ -111,9 +111,9 @@ class FusionConnectorLanguageAccessForm extends ConfigFormBase
   private function buildLanguagesFields(array &$form, $config)
   {
     $header = [
-      t('Languages you want not to be exposed'),
+      t('Language'),
       [
-        'data' => t('Is it disabled for indexing?'),
+        'data' => t('Disable indexing'),
         'class' => ['checkbox'],
       ],
     ];
