@@ -97,7 +97,8 @@ class FusionConnectorLanguageTypeAccessForm extends ConfigFormBase
   public function buildForm(array $form, FormStateInterface $form_state)
   {
     $config = $this->config('fusion_connector.settings');
-    $disabledLanguages = $config->get('disabled_entity_type_languages');
+    $disabledLanguagesEntityType = $config->get('disabled_entity_type_languages');
+    $disabledLanguages = $config->get('disabled_languages');
 
     $entity_type_id = $this->request->get('entity_type_id');
     $bundle = $this->request->get('bundle');
@@ -146,15 +147,17 @@ class FusionConnectorLanguageTypeAccessForm extends ConfigFormBase
           '#type' => 'checkbox',
           '#default_value' => in_array(
             $value,
-            $disabledLanguages[$resource_config_id]
+            $disabledLanguagesEntityType[$resource_config_id]
           ) ? 1 : 0,
           '#wrapper_attributes' => [
             'class' => ['checkbox'],
           ],
         ];
+        if (in_array($value, $disabledLanguages)) {
+          $form['fusion_connector_entity_type_languages'][$value]['checked']['#disabled'] = TRUE;
+        }
       }
     }
-
     return parent::buildForm($form, $form_state);
   }
 
@@ -163,11 +166,11 @@ class FusionConnectorLanguageTypeAccessForm extends ConfigFormBase
    */
   public function submitForm(array &$form, FormStateInterface $form_state)
   {
-    $disabledLanguages = $form_state->getValue('fusion_connector_entity_type_languages');
+    $disabledLanguagesEntityType = $form_state->getValue('fusion_connector_entity_type_languages');
 
     $checkedValues[$form['id']['#value']] = [];
-    if (count($disabledLanguages)) {
-      foreach ($disabledLanguages as $key => $value) {
+    if (count($disabledLanguagesEntityType)) {
+      foreach ($disabledLanguagesEntityType as $key => $value) {
         if ($value['checked'] == 1) {
           $checkedValues[$form['id']['#value']][] = $key;
         }
