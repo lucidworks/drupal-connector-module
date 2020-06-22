@@ -62,14 +62,30 @@ class FusionConnectorResourceTypeRepository extends ResourceTypeRepository {
    * {@inheritdoc}
    */
   public function getAllAvailableResourceTypesNoFilters() {
-
+    $config = \Drupal::config('fusion_connector.settings');
+    $disabled_entities = $config->get('disabled_entities');
     $resources = [];
     foreach (self::BundleTypes as $value) {
-      $resources[$value] = $this->entityTypeBundleInfo->getBundleInfo(
+      $bundleInfo = $this->entityTypeBundleInfo->getBundleInfo(
         $value
       );
+        if (count($bundleInfo)) {
+          foreach ($bundleInfo as $bundle => $entitiesArray) {
+            foreach ($entitiesArray as $key => $label)
+            {
+              $resource_config_id = sprintf(
+                '%s--%s',
+                $value,
+                $bundle
+              );
+              //hide config for disabled entities
+              if (!in_array($resource_config_id, $disabled_entities)) {
+                $resources[$value][$bundle] = $entitiesArray;
+              }
+            }
+          }
+        }
     }
-
     return $resources;
   }
 }
