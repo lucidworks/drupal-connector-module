@@ -128,7 +128,7 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase {
 
     $form['fusion_connector_fieldsaccess'] = [
       '#type'    => 'table',
-      '#header'  => [$this->t('Field name'), $this->t('Disabled')],
+      '#header'  => [$this->t('Field name'), $this->t('Disable indexing')],
       '#caption' => $this->t(
         'You are editing the fields filtering for %item.',
         ['%item' => $entity_type_id]

@@ -85,7 +85,7 @@ class FusionConnectorPermissions implements ContainerInjectionInterface {
    */
   public function permissions() {
 
-   $types = $this->resource_type->getAllAvailableResourceTypesNoFilters();
+   $types = \Drupal::service('fusion_connector.repository')->getAllAvailableResourceTypesNoFilters();
     $permissions = [];
 
     foreach ($types as $bundle => $entities) {
