@@ -35,7 +35,7 @@ class FusionConnectorEntryPoint extends EntryPoint {
   public function index() {
 
     //filter the available entities for the current user
-    $resources = $this->resourceTypeRepository->getAllAvailableResourceTypes();
+    $resources = \Drupal::service('fusion_connector.repository')->getAllAvailableResourceTypes();
 
     $cacheability = (new CacheableMetadata())
       ->addCacheContexts(['user.roles:authenticated'])

@@ -29,7 +29,7 @@ class FusionRoutes extends Routes {
     $upload_routes = new RouteCollection();
 
     // JSON:API's routes: entry point + routes for every resource type.
-    $resources = $this->resourceTypeRepository->getAllAvailableResourceTypes();
+    $resources = \Drupal::service('fusion_connector.repository')->getAllAvailableResourceTypes();
 
     //get all the relatable resource types for the selected entities
     $selectedResourcesTypeNames = [];

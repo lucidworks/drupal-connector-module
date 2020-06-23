@@ -28,8 +28,6 @@ services:
           # This must have a higher priority than the 'serializer.normalizer.http_exception.jsonapi' to take effect.
           - { name: jsonapi_normalizer, priority: 1 }
 
-  fusion_connector.jsonapi.resource_type.repository:
+  fusion_connector.repository:
       class: Drupal\fusion_connector\ResourceType\FusionConnectorResourceTypeRepository
-      public: false
-      decorates: jsonapi.resource_type.repository
-      parent: jsonapi.resource_type.repository
+      arguments: ['@jsonapi.resource_type.repository', '@entity_type.bundle.info']
