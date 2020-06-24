@@ -48,7 +48,7 @@ class FusionConnectorResourceTypeRepository {
 
     $user = \Drupal::currentUser();
     $config = \Drupal::config('fusion_connector.settings');
-    $disabledLanguages = $config->get('disabled_languages');
+    $disabledLanguages = $config->get('disabled_languages') ? $config->get('disabled_languages') : [];
     $disabled_entities = $config->get('disabled_entities');
     $currentLanguage = \Drupal::languageManager()->getCurrentLanguage()->getId(
     );
@@ -91,8 +91,9 @@ class FusionConnectorResourceTypeRepository {
    */
   public function getAllAvailableResourceTypesNoFilters() {
     $config = \Drupal::config('fusion_connector.settings');
-    $disabled_entities = $config->get('disabled_entities');
+    $disabled_entities = $config->get('disabled_entities') ? $config->get('disabled_entities') : [];
     $resources = [];
+
     foreach (self::BundleTypes as $value) {
       $bundleInfo = $this->entityTypeBundleInfo->getBundleInfo(
         $value
