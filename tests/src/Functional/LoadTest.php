@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\fusion_connector\Functional;
 
+use Drupal\Component\Serialization\Json;
+use Drupal\Console\Bootstrap\Drupal;
 use Drupal\Core\Url;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\jsonapi\Functional\JsonApiFunctionalTestBase;
@@ -43,9 +45,10 @@ class FusionConnectorTest extends JsonApiFunctionalTestBase {
    */
   public function testLoadIndex()
   {
-    $response =  $this->drupalGet('/fusion/');
-    \Drupal::configFactory('fusion_connector.settings')->getEditable('disabled_entities');
+    $response =  Json::decode($this->drupalGet('/fusion/'));
+
     $this->assertSession()->statusCodeEquals(200);
+    $this->assertNotNull($response);
   }
 
   /**
@@ -53,9 +56,10 @@ class FusionConnectorTest extends JsonApiFunctionalTestBase {
    */
   public function testLoadNodeType()
   {
-    $response =  $this->drupalGet('/fusion/node/article');
-    \Drupal::configFactory('fusion_connector.settings')->getEditable('disabled_entities');
+    $response =  Json::decode($this->drupalGet('/fusion/node/article'));
+
     $this->assertSession()->statusCodeEquals(200);
+    $this->assertNotNull($response);
   }
 
 }
