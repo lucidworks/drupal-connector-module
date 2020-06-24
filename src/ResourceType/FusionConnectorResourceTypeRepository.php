@@ -44,14 +44,14 @@ class FusionConnectorResourceTypeRepository {
    * Get all the available resource types, after the filtering is applied
    * {@inheritdoc}
    */
-  public function getAllAvailableResourceTypes() {
+  public function getAllAvailableResourceTypes()
+  {
 
     $user = \Drupal::currentUser();
     $config = \Drupal::config('fusion_connector.settings');
     $disabledLanguages = $config->get('disabled_languages') ? $config->get('disabled_languages') : [];
     $disabled_entities = $config->get('disabled_entities');
-    $currentLanguage = \Drupal::languageManager()->getCurrentLanguage()->getId(
-    );
+    $currentLanguage = \Drupal::languageManager()->getCurrentLanguage()->getId();
 
     $resources = [];
     if (!in_array($currentLanguage, $disabledLanguages)) {
@@ -72,14 +72,37 @@ class FusionConnectorResourceTypeRepository {
             $resource->getEntityTypeId(),
             self::BundleTypes
           ) && $user->hasPermission(
-            'view fusion_connector ' . $key
+            'view fusion_connector '.$key
           ) && !in_array($key, $disabled_entities)) {
           $resources[$key] = $resource;
         }
       }
-    }
-    else {
+    } else {
       $resources = [];
+    }
+
+    return $resources;
+  }
+
+  /**
+   * Get all the enabled resource types,
+   * {@inheritdoc}
+   */
+  public function getAllEnabledResourceTypes()
+  {
+    $config = \Drupal::config('fusion_connector.settings');
+    $disabled_entities = $config->get('disabled_entities');
+
+    $resources = [];
+
+    $allResources = $this->resourceTypeRepository->all();
+    foreach ($allResources as $key => $resource) {
+      if (!$resource->isInternal() && in_array(
+          $resource->getEntityTypeId(),
+          self::BundleTypes
+        ) && !in_array($key, $disabled_entities)) {
+        $resources[$key] = $resource;
+      }
     }
 
     return $resources;
@@ -89,7 +112,8 @@ class FusionConnectorResourceTypeRepository {
    * Get all the available resource types, no filtering is applied
    * {@inheritdoc}
    */
-  public function getAllAvailableResourceTypesNoFilters() {
+  public function getAllAvailableResourceTypesNoFilters()
+  {
     $config = \Drupal::config('fusion_connector.settings');
     $disabled_entities = $config->get('disabled_entities') ? $config->get('disabled_entities') : [];
     $resources = [];
@@ -114,6 +138,7 @@ class FusionConnectorResourceTypeRepository {
         }
       }
     }
+
     return $resources;
   }
 }

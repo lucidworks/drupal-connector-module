@@ -1,0 +1,25 @@
+fusion_connector.settings:
+  type: config_object
+  label: Fusion Connector Settings
+  mapping:
+    disabled_fields:
+      type: sequence
+      label: Fields that will not be exposed
+      sequence:
+        type: sequence
+        sequence:
+          type: string
+
+    disabled_languages:
+      type: mapping
+      label: Languages that will not be exposed
+      sequence:
+        - type: string
+
+    disabled_entities:
+      type: mapping
+      label: Entities that will not be exposed
+      sequence:
+        - type: string
+
+
