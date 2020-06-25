@@ -52,7 +52,7 @@ class FusionConnectorTest extends JsonApiFunctionalTestBase {
   }
 
   /**
-   * Tests that the home page loads with a 200 response.
+   * Tests that the entity page loads with a 200 response and valid content
    */
   public function testLoadNodeType()
   {
@@ -64,7 +64,7 @@ class FusionConnectorTest extends JsonApiFunctionalTestBase {
 
 
   /**
-   * Tests that the home page loads with a 200 response.
+   * Tests that a disabled entity will not load and return a 404 reponse
    */
   public function testLoadNodeTypeUserNotAllowed()
   {
