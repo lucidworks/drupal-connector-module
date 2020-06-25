@@ -17,7 +17,7 @@ fusion_connector.settings:
         - type: string
 
     disabled_entities:
-      type: mapping
+      type: sequence
       label: Entities that will not be exposed
       sequence:
         - type: string

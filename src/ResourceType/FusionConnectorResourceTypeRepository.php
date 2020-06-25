@@ -11,7 +11,7 @@ use Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface;
  */
 class FusionConnectorResourceTypeRepository {
 
-  const  BundleTypes = ['node', 'taxonomy_term', 'taxonomy_vocabulary'];
+  const bundleTypes = ['node', 'taxonomy_term', 'taxonomy_vocabulary'];
 
   /**
    * The JSON:API resource type repository.
@@ -70,7 +70,7 @@ class FusionConnectorResourceTypeRepository {
             $disabledLanguages
           ) && !$resource->isInternal() && in_array(
             $resource->getEntityTypeId(),
-            self::BundleTypes
+            self::bundleTypes
           ) && $user->hasPermission(
             'view fusion_connector '.$key
           ) && !in_array($key, $disabled_entities)) {
@@ -99,7 +99,7 @@ class FusionConnectorResourceTypeRepository {
     foreach ($allResources as $key => $resource) {
       if (!$resource->isInternal() && in_array(
           $resource->getEntityTypeId(),
-          self::BundleTypes
+          self::bundleTypes
         ) && !in_array($key, $disabled_entities)) {
         $resources[$key] = $resource;
       }
@@ -118,7 +118,7 @@ class FusionConnectorResourceTypeRepository {
     $disabled_entities = $config->get('disabled_entities') ? $config->get('disabled_entities') : [];
     $resources = [];
 
-    foreach (self::BundleTypes as $value) {
+    foreach (self::bundleTypes as $value) {
       $bundleInfo = $this->entityTypeBundleInfo->getBundleInfo(
         $value
       );

@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\fusion_connector\Functional;
 
+use Drupal\Component\Serialization\Json;
+use Drupal\Console\Bootstrap\Drupal;
 use Drupal\Core\Url;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\jsonapi\Functional\JsonApiFunctionalTestBase;
@@ -43,19 +45,41 @@ class FusionConnectorTest extends JsonApiFunctionalTestBase {
    */
   public function testLoadIndex()
   {
-    $response =  $this->drupalGet('/fusion/');
-    \Drupal::configFactory('fusion_connector.settings')->getEditable('disabled_entities');
+    $response =  Json::decode($this->drupalGet('/fusion/'));
+
     $this->assertSession()->statusCodeEquals(200);
+    $this->assertNotNull($response);
   }
 
   /**
-   * Tests that the home page loads with a 200 response.
+   * Tests that the entity page loads with a 200 response and valid content
    */
   public function testLoadNodeType()
   {
-    $response =  $this->drupalGet('/fusion/node/article');
-    \Drupal::configFactory('fusion_connector.settings')->getEditable('disabled_entities');
+    $response =  Json::decode($this->drupalGet('/fusion/node/article'));
+
     $this->assertSession()->statusCodeEquals(200);
+    $this->assertNotNull($response);
+  }
+
+
+  /**
+   * Tests that a disabled entity will not load and return a 404 reponse
+   */
+  public function testLoadNodeTypeUserNotAllowed()
+  {
+    $disabledEntities = \Drupal::configFactory()->getEditable('fusion_connector.settings');
+    $disabledEntities->set('disabled_entities', ['node--article']);
+    $disabledEntities->save();
+    $this->rebuildAll();
+
+    $this->user = $this->drupalCreateUser([], 'testUserNoPermission');
+    $this->drupalLogin($this->user);
+
+    $response =  Json::decode($this->drupalGet('/fusion/node/article'));
+
+    $this->assertSession()->statusCodeEquals(404);
+    $this->assertNull($response);
   }
 
 }
