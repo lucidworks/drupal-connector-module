@@ -48,9 +48,20 @@ class EntityAccessChecker extends JsonApiEntityAccessChecker {
     AccountInterface $account = NULL
   ) {
     $config = \Drupal::config('fusion_connector.settings');
-    $resource_config_id = sprintf('%s--%s', $entity->getEntityTypeId(), $entity->bundle());
-    $disabledEntityTypeLanguages = $config->get('disabled_entity_type_languages')[$resource_config_id] ?? [];
-    $disabledLanguages = array_unique(array_merge($config->get('disabled_languages') ?? [], $disabledEntityTypeLanguages)) ;
+    $resource_config_id = sprintf(
+      '%s--%s',
+      $entity->getEntityTypeId(),
+      $entity->bundle()
+    );
+    $disabledEntityTypeLanguages = $config->get(
+        'disabled_entity_type_languages'
+      )[$resource_config_id] ?? [];
+    $disabledLanguages = array_unique(
+      array_merge(
+        $config->get('disabled_languages') ?? [],
+        $disabledEntityTypeLanguages
+      )
+    );
 
     $account = $account ? : $this->currentUser;
     $resource_type = $this->resourceTypeRepository->get(
@@ -64,10 +75,12 @@ class EntityAccessChecker extends JsonApiEntityAccessChecker {
     );
     $access = $this->checkEntityAccess($entity, 'view', $account);
     $access = AccessResult::neutral()
-      ->addCacheContexts([
-        'languages:'.LanguageInterface::TYPE_CONTENT,
-        'url'
-      ])
+      ->addCacheContexts(
+        [
+          'languages:' . LanguageInterface::TYPE_CONTENT,
+          'url',
+        ]
+      )
       ->orIf($access);
 
     $entity->addCacheableDependency($access);
@@ -99,7 +112,13 @@ class EntityAccessChecker extends JsonApiEntityAccessChecker {
       $container->getParameter('fusion_connector.base_path')
     )) {
       //disable the access to an entity if the langguage is disabled for that entity type of the current language is disabled
-      if (in_array($entity->language()->getId(), $disabledLanguages) || in_array($container->get('language_manager')->getCurrentLanguage()->getId(), $disabledLanguages)) {
+      if (in_array(
+          $entity->language()->getId(),
+          $disabledLanguages
+        ) || in_array(
+          $container->get('language_manager')->getCurrentLanguage()->getId(),
+          $disabledLanguages
+        )) {
         $access = $access->andIf(new AccessResultForbidden());
         $entity->addCacheableDependency($access);
 
@@ -167,24 +186,19 @@ class EntityAccessChecker extends JsonApiEntityAccessChecker {
     }
 
     //check fusion access
-    $config = \Drupal::config('fusion_connector.settings');
-    $fusionUserRoleAccess = $config->get('user_role_access');
-
     $userHasAccess = FALSE;
-    $userRoles = $account->getRoles();
-    foreach ($userRoles as $userRole) {
-      if (in_array($entity->bundle(), $fusionUserRoleAccess[$userRole])) {
-        $userHasAccess = TRUE;
-      }
+    if ($account->hasPermission(
+      'view fusion_connector ' . $entity->getEntityTypeId(
+      ) . '--' . $entity->bundle()
+    )) {
+      $userHasAccess = TRUE;
     }
-
     //if no access found, return forbidden
     if (!$userHasAccess) {
       return AccessResult::forbidden(
         'In fusion connector have no access to this resource!'
       );
     }
-
     return $access;
   }
 }

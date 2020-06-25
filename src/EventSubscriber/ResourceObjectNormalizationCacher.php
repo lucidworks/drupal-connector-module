@@ -67,7 +67,7 @@ class ResourceObjectNormalizationCacher extends JsonApiResourceObjectNormalizati
       \Drupal::request()->getRequestUri(),
       $container->getParameter('fusion_connector.base_path')
     )) {
-      $lookupRenderArray['#cache']['keys'] = 'fusion';
+      $lookupRenderArray['#cache']['keys'] = ['fusion'];
     }
 
     return $lookupRenderArray;
