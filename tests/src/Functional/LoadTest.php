@@ -62,4 +62,24 @@ class FusionConnectorTest extends JsonApiFunctionalTestBase {
     $this->assertNotNull($response);
   }
 
+
+  /**
+   * Tests that the home page loads with a 200 response.
+   */
+  public function testLoadNodeTypeUserNotAllowed()
+  {
+    $disabledEntities = \Drupal::configFactory()->getEditable('fusion_connector.settings');
+    $disabledEntities->set('disabled_entities', ['node--article']);
+    $disabledEntities->save();
+    $this->rebuildAll();
+
+    $this->user = $this->drupalCreateUser([], 'testUserNoPermission');
+    $this->drupalLogin($this->user);
+
+    $response =  Json::decode($this->drupalGet('/fusion/node/article'));
+
+    $this->assertSession()->statusCodeEquals(404);
+    $this->assertNull($response);
+  }
+
 }
