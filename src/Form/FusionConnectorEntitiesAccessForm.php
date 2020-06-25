@@ -15,7 +15,7 @@ use Drupal\Core\Url;
  *
  * @package Drupal\fusion_connector\Controller
  */
-class FusionConnectorForm extends ConfigFormBase {
+class FusionConnectorEntitiesAccessForm extends ConfigFormBase {
 
   /**
    * {@inheritdoc}
@@ -27,10 +27,11 @@ class FusionConnectorForm extends ConfigFormBase {
   /**
    * Constructs a \Drupal\system\ConfigFormBase object.
    *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface   $config_factory
+   * @param \Drupal\Core\Config\ConfigFactoryInterface     $config_factory
    *   The factory for configuration objects.
-   * @param \Drupal\Core\ProxyClass\Routing\RouteBuilder $router_builder
+   * @param \Drupal\Core\ProxyClass\Routing\RouteBuilder   $router_builder
    *   The router builder to rebuild menus after saving config entity.
+   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
@@ -64,7 +65,7 @@ class FusionConnectorForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'jsonapi_settings_form';
+    return 'fusion_connector_entities_access';
   }
 
   /**

@@ -4,7 +4,7 @@ route_callbacks:
 fusion_connector.settings:
   path: '/admin/config/services/fusion_connector'
   defaults:
-    _form: '\Drupal\fusion_connector\Form\FusionConnectorForm'
+    _form: '\Drupal\fusion_connector\Form\FusionConnectorEntitiesAccessForm'
     _title: 'Fusion Connector'
   requirements:
     _permission: 'administer site configuration'
