@@ -117,7 +117,9 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase {
     }
 
     $config = $this->config('fusion_connector.settings');
-    $disabledFields = $config->get('disabled_fields');
+    $disabledFields = $config->get('disabled_fields') ? $config->get(
+      'disabled_fields'
+    ) : [];
     $resource_config_id = sprintf('%s--%s', $bundle, $entity_type_id);
 
     /** @var \Drupal\Core\Config\Entity\ConfigEntityTypeInterface $entity_type */
@@ -142,10 +144,13 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase {
           'label' => ['#plain_text' => $field],
           [
             '#type'          => 'checkbox',
-            '#default_value' => in_array(
+            '#default_value' => array_key_exists(
+              $resource_config_id,
+              $disabledFields
+            ) ? (in_array(
               $field,
               $disabledFields[$resource_config_id]
-            ) ? 1 : 0,
+            ) ? 1 : 0) : 0,
 
           ],
 
@@ -178,10 +183,6 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase {
       ->save();
 
     parent::submitForm($form, $form_state);
-
-    $form_state->setRedirect(
-      'fusion_connector.settings'
-    );
   }
 
   /**
