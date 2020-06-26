@@ -16,8 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @package Drupal\fusion_connector\Controller
  */
-class FusionConnectorLanguageTypeAccessForm extends ConfigFormBase
-{
+class FusionConnectorLanguageTypeAccessForm extends ConfigFormBase {
 
   /**
    * The current route match.
@@ -41,11 +40,11 @@ class FusionConnectorLanguageTypeAccessForm extends ConfigFormBase
   /**
    * Constructs a \Drupal\system\ConfigFormBase object.
    *
-   * @param ConfigFactoryInterface $config_factory
+   * @param ConfigFactoryInterface                              $config_factory
    *   The factory for configuration objects.
-   * @param RouteBuilder $router_builder
+   * @param RouteBuilder                                        $router_builder
    *   The router builder to rebuild menus after saving config entity.
-   * @param \Symfony\Component\HttpFoundation\Request $request
+   * @param \Symfony\Component\HttpFoundation\Request           $request
    *   The request object that contains query params
    * @param \Drupal\jsonapi\ResourceType\ResourceTypeRepository $resource_type_repository
    *   The service that provides information aout all the entity types
@@ -65,8 +64,7 @@ class FusionConnectorLanguageTypeAccessForm extends ConfigFormBase
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container)
-  {
+  public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
       $container->get('router.builder'),
@@ -78,27 +76,28 @@ class FusionConnectorLanguageTypeAccessForm extends ConfigFormBase
   /**
    * {@inheritdoc}
    */
-  protected function getEditableConfigNames()
-  {
+  protected function getEditableConfigNames() {
     return ['fusion_connector.settings'];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getFormId()
-  {
-    return 'jsonapi_settings_form';
+  public function getFormId() {
+    return 'fussion_connector_language_type_access';
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state)
-  {
+  public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('fusion_connector.settings');
-    $disabledLanguagesEntityType = $config->get('disabled_entity_type_languages');
-    $disabledLanguages = $config->get('disabled_languages');
+    $disabledLanguagesEntityType = $config->get(
+      'disabled_entity_type_languages'
+    ) ? $config->get('disabled_entity_type_languages') : [];
+    $disabledLanguages = $config->get('disabled_languages') ? $config->get(
+      'disabled_languages'
+    ) : [];
 
     $entity_type_id = $this->request->get('entity_type_id');
     $bundle = $this->request->get('bundle');
@@ -120,18 +119,18 @@ class FusionConnectorLanguageTypeAccessForm extends ConfigFormBase
     $header = [
       t('Language'),
       [
-        'data' => t('Disable indexing'),
+        'data'  => t('Disable indexing'),
         'class' => ['checkbox'],
       ],
     ];
     $form['fusion_connector_entity_type_languages'] = [
-      '#type' => 'table',
-      '#header' => $header,
+      '#type'    => 'table',
+      '#header'  => $header,
       '#caption' => $this->t(
         'Choose what languages to disable for %resource_type:',
         ['%resource_type' => $resource_type->getTypeName()]
       ),
-      '#sticky' => true,
+      '#sticky'  => TRUE,
     ];
 
     $form['id'] = ['#type' => 'hidden', '#value' => $resource_config_id];
@@ -144,11 +143,14 @@ class FusionConnectorLanguageTypeAccessForm extends ConfigFormBase
           '#plain_text' => $language->getName(),
         ];
         $form['fusion_connector_entity_type_languages'][$value]['checked'] = [
-          '#type' => 'checkbox',
-          '#default_value' => in_array(
+          '#type'               => 'checkbox',
+          '#default_value'      => array_key_exists(
+            $resource_config_id,
+            $disabledLanguagesEntityType
+          ) ? (in_array(
             $value,
             $disabledLanguagesEntityType[$resource_config_id]
-          ) ? 1 : 0,
+          ) ? 1 : 0) : 0,
           '#wrapper_attributes' => [
             'class' => ['checkbox'],
           ],
@@ -165,9 +167,10 @@ class FusionConnectorLanguageTypeAccessForm extends ConfigFormBase
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state)
-  {
-    $disabledLanguagesEntityType = $form_state->getValue('fusion_connector_entity_type_languages');
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    $disabledLanguagesEntityType = $form_state->getValue(
+      'fusion_connector_entity_type_languages'
+    );
 
     $checkedValues[$form['id']['#value']] = [];
     if (count($disabledLanguagesEntityType)) {

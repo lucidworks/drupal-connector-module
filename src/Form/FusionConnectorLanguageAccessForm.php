@@ -62,7 +62,7 @@ class FusionConnectorLanguageAccessForm extends ConfigFormBase
    */
   public function getFormId()
   {
-    return 'jsonapi_settings_form';
+    return 'fussion_connector_language_access';
   }
 
   /**
