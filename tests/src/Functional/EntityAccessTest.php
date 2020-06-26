@@ -3,9 +3,6 @@
 namespace Drupal\Tests\fusion_connector\Functional;
 
 use Drupal\Component\Serialization\Json;
-use Drupal\Console\Bootstrap\Drupal;
-use Drupal\Core\Url;
-use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\jsonapi\Functional\JsonApiFunctionalTestBase;
 
 /**
@@ -13,7 +10,7 @@ use Drupal\Tests\jsonapi\Functional\JsonApiFunctionalTestBase;
  *
  * @group fusion_connector
  */
-class FusionConnectorTest extends JsonApiFunctionalTestBase {
+class EntityAccessTest extends JsonApiFunctionalTestBase {
 
   protected $defaultTheme = 'stable';
 
@@ -45,7 +42,7 @@ class FusionConnectorTest extends JsonApiFunctionalTestBase {
    */
   public function testLoadIndex()
   {
-    $response =  Json::decode($this->drupalGet('/fusion/'));
+    $response = Json::decode($this->drupalGet('/fusion/'));
 
     $this->assertSession()->statusCodeEquals(200);
     $this->assertNotNull($response);
@@ -56,10 +53,17 @@ class FusionConnectorTest extends JsonApiFunctionalTestBase {
    */
   public function testLoadNodeType()
   {
-    $response =  Json::decode($this->drupalGet('/fusion/node/article'));
+    $this->drupalCreateNode([
+      'title' => 'Hello World',
+      'type' => 'article'
+    ]);
+    $response = Json::decode($this->drupalGet('/fusion/node/article'));
 
     $this->assertSession()->statusCodeEquals(200);
     $this->assertNotNull($response);
+    $this->assertNotNull($response['data']);
+    $this->assertTrue(count($response['data']) > 0);
+    $this->assertEqual($response['data'][0]['attributes']['title'], 'Hello World');
   }
 
 
@@ -76,10 +80,9 @@ class FusionConnectorTest extends JsonApiFunctionalTestBase {
     $this->user = $this->drupalCreateUser([], 'testUserNoPermission');
     $this->drupalLogin($this->user);
 
-    $response =  Json::decode($this->drupalGet('/fusion/node/article'));
+    $response = Json::decode($this->drupalGet('/fusion/node/article'));
 
     $this->assertSession()->statusCodeEquals(404);
     $this->assertNull($response);
   }
-
 }
