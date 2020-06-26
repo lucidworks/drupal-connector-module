@@ -10,8 +10,16 @@ fusion_connector.settings:
         sequence:
           type: string
 
+    disabled_entity_type_languages:
+      type: sequence
+      label: Disable language per entity
+      sequence:
+        type: sequence
+        sequence:
+          type: string
+
     disabled_languages:
-      type: mapping
+      type: sequence
       label: Languages that will not be exposed
       sequence:
         - type: string

@@ -126,7 +126,7 @@ class EntityAccessChecker extends JsonApiEntityAccessChecker {
           $entity,
           $access,
           '/data',
-          'The current user is not allowed to GET the selected resource.'
+          'The current language is not allowed to GET the selected resource.'
         );
       }
 
