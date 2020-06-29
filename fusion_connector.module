@@ -9,6 +9,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
+use Drupal\Core\Link;
 
 /**
  * Implements hook_help().
@@ -22,12 +24,11 @@ function fusion_connector_help($route_name, RouteMatchInterface $route_match) {
       $output .= '<p>' . t(
           'You can filter the content type entities which will be exposed for indexing based on the available user roles.'
         ) . '</p>';
+      $permissions_link = new Link('Permissions Page', new Url('user.admin_permissions'));
       $output .= '<p>' . t(
-          'If one of the column has no clickable checkboxes available, please check the "access content" permission for that user role".'
+          'You can setup access for user roles in the '.$permissions_link->toString().' under Fusion Connector group'
         ) . '</p>';
-      $output .= '<p>' . t(
-          'The administrator roles will see all the checked content types.'
-        ) . '</p>';
+
       return $output;
     case 'fusion_connector.settings.edit_fieldsaccess_form':
       $output = '';
