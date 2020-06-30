@@ -85,20 +85,6 @@ class EntityAccessChecker extends JsonApiEntityAccessChecker {
 
     $entity->addCacheableDependency($access);
     if (!$access->isAllowed()) {
-      // If this is the default revision or the entity is not revisionable, then
-      // check access to the entity label. Revision support is all or nothing.
-      if (!$entity->getEntityType()->isRevisionable(
-        ) || $entity->isDefaultRevision()) {
-        $label_access = $entity->access('view label', NULL, TRUE);
-        $entity->addCacheableDependency($label_access);
-        if ($label_access->isAllowed()) {
-          return LabelOnlyResourceObject::createFromEntity(
-            $resource_type,
-            $entity
-          );
-        }
-        $access = $access->orIf($label_access);
-      }
       return new EntityAccessDeniedHttpException(
         $entity,
         $access,
