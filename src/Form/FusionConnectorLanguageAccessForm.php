@@ -7,15 +7,14 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\ProxyClass\Routing\RouteBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Url;
+use Drupal\Core\Config\Config;
 
 /**
- * Class FussionConnectorLanguageAccessForm
+ * Class FussionConnectorLanguageAccessForm.
  *
  * @package Drupal\fusion_connector\Controller
  */
-class FusionConnectorLanguageAccessForm extends ConfigFormBase
-{
+class FusionConnectorLanguageAccessForm extends ConfigFormBase {
 
   /**
    * {@inheritdoc}
@@ -41,8 +40,7 @@ class FusionConnectorLanguageAccessForm extends ConfigFormBase
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container)
-  {
+  public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
       $container->get('router.builder')
@@ -52,24 +50,21 @@ class FusionConnectorLanguageAccessForm extends ConfigFormBase
   /**
    * {@inheritdoc}
    */
-  protected function getEditableConfigNames()
-  {
+  protected function getEditableConfigNames() {
     return ['fusion_connector.settings'];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getFormId()
-  {
+  public function getFormId() {
     return 'fussion_connector_language_access';
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state)
-  {
+  public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('fusion_connector.settings');
 
     $this->buildLanguagesFields($form, $config);
@@ -80,8 +75,7 @@ class FusionConnectorLanguageAccessForm extends ConfigFormBase
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state)
-  {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $allowed_languages = array_filter(
       $form_state->getValue('fusion_connector_languages')
     );
@@ -104,23 +98,28 @@ class FusionConnectorLanguageAccessForm extends ConfigFormBase
   }
 
   /**
+   * Build the languages fields form.
+   *
    * @param array $form
-   * @param $config
+   *   The form.
+   * @param \Drupal\Core\Config\Config $config
+   *   The form config.
+   *
    * @return array
+   *   Return the form.
    */
-  private function buildLanguagesFields(array &$form, $config)
-  {
+  private function buildLanguagesFields(array &$form, Config $config) {
     $header = [
       t('Language'),
       [
-        'data' => t('Disable indexing'),
+        'data'  => t('Disable indexing'),
         'class' => ['checkbox'],
       ],
     ];
     $form['fusion_connector_languages'] = [
-      '#type' => 'table',
+      '#type'   => 'table',
       '#header' => $header,
-      '#sticky' => true,
+      '#sticky' => TRUE,
     ];
 
     $languages = \Drupal::service('language_manager')->getLanguages();
@@ -131,8 +130,8 @@ class FusionConnectorLanguageAccessForm extends ConfigFormBase
           '#plain_text' => $language->getName(),
         ];
         $form['fusion_connector_languages'][$value]['checked'] = [
-          '#type' => 'checkbox',
-          '#default_value' => in_array(
+          '#type'               => 'checkbox',
+          '#default_value'      => in_array(
             $value,
             $config->get('disabled_languages')
           ) ? 1 : 0,
@@ -145,6 +144,5 @@ class FusionConnectorLanguageAccessForm extends ConfigFormBase
 
     return $form;
   }
-
 
 }

@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Entity\EntityFieldManager;
 
 /**
- * Class FusionController
+ * Class FusionController.
  *
  * @package Drupal\fusion_connector\Controller
  */
@@ -50,11 +50,16 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase {
   /**
    * Constructs a \Drupal\system\ConfigFormBase object.
    *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface          $config_factory
-   * @param \Drupal\Core\ProxyClass\Routing\RouteBuilder        $router_builder
-   * @param \Symfony\Component\HttpFoundation\Request           $request
-   * @param \Drupal\Core\Entity\EntityFieldManager              $entityFieldManager
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The factory for configuration objects.
+   * @param \Drupal\Core\ProxyClass\Routing\RouteBuilder $router_builder
+   *   The router builder.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The request.
+   * @param \Drupal\Core\Entity\EntityFieldManager $entityFieldManager
+   *   The entity field manager.
    * @param \Drupal\jsonapi\ResourceType\ResourceTypeRepository $resource_type_repository
+   *   The jsonapi resource type repository.
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
@@ -189,9 +194,12 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase {
    * Gets all field names for a given entity type and bundle.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
-   * @param string                                  $bundle
+   *   Entity type.
+   * @param string $bundle
+   *   Bundle.
    *
    * @return string[]
+   *   Return array.
    */
   protected function getAllFields(EntityTypeInterface $entity_type, $bundle) {
 
@@ -216,5 +224,7 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase {
       }
     }
     return [];
+
   }
+
 }

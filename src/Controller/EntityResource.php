@@ -47,7 +47,6 @@ class EntityResource extends JsonApiEntityResourse {
   ) {
     /* @var \Drupal\Core\Field\EntityReferenceFieldItemListInterface $field_list */
     $field_list = $entity->get($resource_type->getInternalName($related));
-    //var_dump($request);die;
     // Access will have already been checked by the RelationshipFieldAccess
     // service, so we don't need to call ::getAccessCheckedResourceObject().
     $resource_object = ResourceObject::createFromEntity(
@@ -74,18 +73,18 @@ class EntityResource extends JsonApiEntityResourse {
    *
    * @param \Drupal\jsonapi\JsonApiResource\TopLevelDataInterface $data
    *   The data to wrap.
-   * @param \Symfony\Component\HttpFoundation\Request             $request
+   * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request object.
-   * @param \Drupal\jsonapi\JsonApiResource\IncludedData          $includes
+   * @param \Drupal\jsonapi\JsonApiResource\IncludedData $includes
    *   The resources to be included in the document. Use NullData if
    *   there should be no included resources in the document.
-   * @param int                                                   $response_code
+   * @param int $response_code
    *   The response code.
-   * @param array                                                 $headers
+   * @param array $headers
    *   An array of response headers.
-   * @param \Drupal\jsonapi\JsonApiResource\LinkCollection        $links
+   * @param \Drupal\jsonapi\JsonApiResource\LinkCollection $links
    *   The URLs to which to link. A 'self' link is added automatically.
-   * @param array                                                 $meta
+   * @param array $meta
    *   (optional) The top-level metadata.
    *
    * @return \Drupal\jsonapi\ResourceResponse
@@ -100,7 +99,7 @@ class EntityResource extends JsonApiEntityResourse {
     LinkCollection $links = NULL,
     array $meta = []
   ) {
-    $links = ($links ? : new LinkCollection([]));
+    $links = ($links ?: new LinkCollection([]));
     if (!$links->hasLinkWithKey('self')) {
       $self_link = new Link(
         new CacheableMetadata(),

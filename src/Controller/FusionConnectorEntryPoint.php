@@ -18,11 +18,10 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
 /**
  * Controller for the API entry point.
  *
- * @see      https://www.drupal.org/project/jsonapi/issues/3032787
- * @see      jsonapi.api.php
+ * @see https://www.drupal.org/project/jsonapi/issues/3032787
+ * @see jsonapi.api.php
  * @internal JSON:API maintains no PHP API. The API is the HTTP API. This class
  *           may change at any time and could break any dependencies on it.
- *
  */
 class FusionConnectorEntryPoint extends EntryPoint {
 
@@ -34,14 +33,14 @@ class FusionConnectorEntryPoint extends EntryPoint {
    */
   public function index() {
 
-    //filter the available entities for the current user
+    // Filter the available entities for the current user.
     $resources = \Drupal::service('fusion_connector.repository')->getAllAvailableResourceTypes();
 
     $cacheability = (new CacheableMetadata())
       ->addCacheContexts(['user.roles:authenticated'])
       ->addCacheTags(['fusion_resource_types']);
-    // Only build URLs for exposed resources.
 
+    // Only build URLs for exposed resources.
     $self_link = new Link(
       new CacheableMetadata(),
       Url::fromRoute('fusion.resource_list'),
@@ -62,12 +61,12 @@ class FusionConnectorEntryPoint extends EntryPoint {
           )->setAbsolute();
           // Using a resource type name in place of a link relation type is not
           // technically valid. However, since it matches the link key, it will
-          // not actually be serialized since the rel is omitted if it matches the
-          // link key; because of that no client can rely on it. Once an extension
-          // relation type is implemented for links to a collection, that should
-          // be used instead. Unfortunately, the `collection` link relation type
-          // would not be semantically correct since it would imply that the
-          // entrypoint is a *member* of the link target.
+          // not actually be serialized since the rel is omitted if it matches
+          // the link key; because of that no client can rely on it. Once an
+          // extension relation type is implemented for links to a collection,
+          // that should be used instead. Unfortunately, the `collection` link r
+          // elation type would not be semantically correct since it would imply
+          // that the entrypoint is a *member* of the link target.
           // @todo: implement an extension relation type to signal that this is a primary collection resource.
           $link_relation_type = $resource_type->getTypeName();
           return $carry->withLink(
@@ -96,9 +95,12 @@ class FusionConnectorEntryPoint extends EntryPoint {
         // The cacheability of the `me` URL is the cacheability of that URL
         // itself and the currently authenticated user.
         $cacheability = $cacheability->merge($me_url);
-      } catch (RouteNotFoundException $e) {
+      }
+      catch (RouteNotFoundException $e) {
+
         // Do not add the link if the route is disabled or marked as internal.
       }
+
     }
 
     $response = new ResourceResponse(
@@ -110,6 +112,7 @@ class FusionConnectorEntryPoint extends EntryPoint {
       )
     );
     return $response->addCacheableDependency($cacheability);
+
   }
 
 }

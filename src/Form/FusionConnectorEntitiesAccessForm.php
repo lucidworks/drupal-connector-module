@@ -11,9 +11,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Url;
 
 /**
- * Class FusionController
+ * Class FusionController.
  *
- * @package Drupal\fusion_connector\Controller
+ * @package Drupal\fusion_connector\Form
  */
 class FusionConnectorEntitiesAccessForm extends ConfigFormBase {
 
@@ -22,16 +22,22 @@ class FusionConnectorEntitiesAccessForm extends ConfigFormBase {
    */
   protected $routerBuilder;
 
+  /**
+   * Language manager.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
   protected $languageManager;
 
   /**
    * Constructs a \Drupal\system\ConfigFormBase object.
    *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface     $config_factory
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
-   * @param \Drupal\Core\ProxyClass\Routing\RouteBuilder   $router_builder
+   * @param \Drupal\Core\ProxyClass\Routing\RouteBuilder $router_builder
    *   The router builder to rebuild menus after saving config entity.
    * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
+   *   Language manager.
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
@@ -175,5 +181,7 @@ class FusionConnectorEntitiesAccessForm extends ConfigFormBase {
       ->save();
     $this->routerBuilder->setRebuildNeeded();
     parent::submitForm($form, $form_state);
+
   }
+
 }

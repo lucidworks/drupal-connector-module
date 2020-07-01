@@ -2,16 +2,13 @@
 
 namespace Drupal\fusion_connector\EventSubscriber;
 
-use Drupal\Core\Cache\CacheableResponseInterface;
 use Drupal\jsonapi\Normalizer\Value\CacheableNormalization;
 use Drupal\jsonapi\ResourceResponse;
 use Drupal\jsonapi\EventSubscriber\ResourceResponseSubscriber as JsonApiResourceResponseSubscriber;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Serializer\SerializerInterface;
+
 /**
  * Response subscriber that serializes and removes ResourceResponses' data.
  *
@@ -112,7 +109,7 @@ class ResourceResponseSubscriber extends JsonApiResourceResponseSubscriber {
     $context = [
       'account' => NULL,
       'sparse_fieldset' => NULL,
-      'is_fusion_path' => NULL
+      'is_fusion_path' => NULL,
     ];
     if ($request->query->get('fields')) {
       $context['sparse_fieldset'] = array_map(function ($item) {
@@ -124,8 +121,11 @@ class ResourceResponseSubscriber extends JsonApiResourceResponseSubscriber {
       \Drupal::request()->getRequestUri(),
       $container->getParameter('fusion_connector.base_path')
     )) {
-      $context['is_fusion_path'] = true;
+      $context['is_fusion_path'] = TRUE;
     }
+
     return $context;
+
   }
+
 }

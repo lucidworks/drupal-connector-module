@@ -19,7 +19,7 @@ class ResourceObjectNormalizationCacher extends JsonApiResourceObjectNormalizati
    *
    * @param \Drupal\jsonapi\JsonApiResource\ResourceObject $object
    *   The resource object for which to generate a cache item.
-   * @param array                                          $normalization_parts
+   * @param array $normalization_parts
    *   The normalization parts to cache.
    */
   public function saveOnTerminate(
@@ -39,7 +39,7 @@ class ResourceObjectNormalizationCacher extends JsonApiResourceObjectNormalizati
       \Drupal::request()->getRequestUri(),
       $container->getParameter('fusion_connector.base_path')
     )) {
-      $key .= ':' . 'fusion';
+      $key .= ':fusion';
     }
     $this->toCache[$key] = [$object, $normalization_parts];
   }
