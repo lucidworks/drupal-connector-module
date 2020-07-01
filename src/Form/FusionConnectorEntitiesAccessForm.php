@@ -15,7 +15,8 @@ use Drupal\Core\Url;
  *
  * @package Drupal\fusion_connector\Form
  */
-class FusionConnectorEntitiesAccessForm extends ConfigFormBase {
+class FusionConnectorEntitiesAccessForm extends ConfigFormBase
+{
 
   /**
    * {@inheritdoc}
@@ -52,7 +53,8 @@ class FusionConnectorEntitiesAccessForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
+  public static function create(ContainerInterface $container)
+  {
     return new static(
       $container->get('config.factory'),
       $container->get('router.builder'),
@@ -63,25 +65,28 @@ class FusionConnectorEntitiesAccessForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  protected function getEditableConfigNames() {
+  protected function getEditableConfigNames()
+  {
     return ['fusion_connector.settings'];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getFormId() {
+  public function getFormId()
+  {
     return 'fusion_connector_entities_access';
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state)
+  {
     $multiLanguage = count($this->languageManager->getLanguages()) > 1;
 
     $header = [
-      'disabled_entities' => t('Disable indexing'),
+      'disabled_entities' => t('Enable indexing'),
     ];
 
     $header['operations'] = $this->t('Operations');
@@ -91,18 +96,16 @@ class FusionConnectorEntitiesAccessForm extends ConfigFormBase {
     }
 
     $form['fusion_connector_types'] = [
-      '#type'   => 'tableselect',
+      '#type' => 'tableselect',
       '#header' => $header,
-      '#sticky' => TRUE,
+      '#sticky' => true,
     ];
 
-    $types['node'] = \Drupal::service("entity_type.bundle.info")->getBundleInfo(
-      'node'
-    );
-    $types['taxonomy_term'] = \Drupal::service("entity_type.bundle.info")
-      ->getBundleInfo('taxonomy_term');
-    $types['taxonomy_vocabulary'] = \Drupal::service("entity_type.bundle.info")
-      ->getBundleInfo('taxonomy_vocabulary');
+    $types = $this->getEntityTypes();
+
+    $config = $this->config('fusion_connector.settings');
+    $disabledEntities = $config->get('disabled_entities');
+    $defaultValues = [];
 
     foreach ($types as $bundle => $entities) {
       if (count($entities)) {
@@ -111,16 +114,16 @@ class FusionConnectorEntitiesAccessForm extends ConfigFormBase {
           $row['disabled_entities'] = $label['label'];
 
           $row['operations']['data'] = [
-            '#type'  => 'operations',
+            '#type' => 'operations',
             '#links' => [
               'edit' => [
-                'title'  => t('Filter fields'),
+                'title' => t('Filter fields'),
                 'weight' => -10,
-                'url'    => Url::fromRoute(
+                'url' => Url::fromRoute(
                   'fusion_connector.settings.edit_fieldsaccess_form',
                   [
                     'entity_type_id' => $type,
-                    'bundle'         => $bundle,
+                    'bundle' => $bundle,
                   ]
                 ),
               ],
@@ -129,16 +132,16 @@ class FusionConnectorEntitiesAccessForm extends ConfigFormBase {
 
           if ($multiLanguage) {
             $row['language_access']['data'] = [
-              '#type'  => 'operations',
+              '#type' => 'operations',
               '#links' => [
                 'edit' => [
-                  'title'  => t('Language Access'),
+                  'title' => t('Language Access'),
                   'weight' => -11,
-                  'url'    => Url::fromRoute(
+                  'url' => Url::fromRoute(
                     'fusion_connector.settings.edit_languagetypeaccess_form',
                     [
                       'entity_type_id' => $type,
-                      'bundle'         => $bundle,
+                      'bundle' => $bundle,
                     ]
                   ),
                 ],
@@ -146,33 +149,30 @@ class FusionConnectorEntitiesAccessForm extends ConfigFormBase {
             ];
           }
           $form['fusion_connector_types']['#options'][$resource_config_id] = $row;
+
+          if (!in_array($resource_config_id, $disabledEntities)) {
+            $defaultValues[$resource_config_id] = true;
+          }
         }
       }
     }
 
-    $config = $this->config('fusion_connector.settings');
-    $disabledEntities = $config->get('disabled_entities');
-    $defaultValues = [];
-    if (count($disabledEntities)) {
-      foreach ($disabledEntities as $disabledEntity) {
-        $defaultValues[$disabledEntity] = TRUE;
-      }
-    }
     $form['fusion_connector_types']['#default_value'] = $defaultValues;
+
     return parent::buildForm($form, $form_state);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
-    $disabledEntities = array_filter(
-      $form_state->getValue('fusion_connector_types')
-    );
+  public function submitForm(array &$form, FormStateInterface $form_state)
+  {
     $disabledEntitiesArray = [];
-    if (count($disabledEntities)) {
-      foreach ($disabledEntities as $entityTypeId) {
-        $disabledEntitiesArray[] = $entityTypeId;
+    $submitedEntities = $form_state->getValue('fusion_connector_types');
+
+    foreach ($submitedEntities as $resource_config_id => $entity) {
+      if ($entity === 0) {
+        $disabledEntitiesArray[] = $resource_config_id;
       }
     }
 
@@ -180,8 +180,26 @@ class FusionConnectorEntitiesAccessForm extends ConfigFormBase {
       ->set('disabled_entities', $disabledEntitiesArray)
       ->save();
     $this->routerBuilder->setRebuildNeeded();
+
     parent::submitForm($form, $form_state);
 
   }
 
+  /**
+   * @param $types
+   * @return mixed
+   */
+  private
+  function getEntityTypes()
+  {
+    $types['node'] = \Drupal::service("entity_type.bundle.info")->getBundleInfo(
+      'node'
+    );
+    $types['taxonomy_term'] = \Drupal::service("entity_type.bundle.info")
+      ->getBundleInfo('taxonomy_term');
+    $types['taxonomy_vocabulary'] = \Drupal::service("entity_type.bundle.info")
+      ->getBundleInfo('taxonomy_vocabulary');
+
+    return $types;
+  }
 }

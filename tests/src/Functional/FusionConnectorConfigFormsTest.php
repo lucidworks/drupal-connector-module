@@ -68,7 +68,7 @@ class FusionConnectorConfigFormsTest extends BrowserTestBase {
 
     // Disable the page entity from indexing.
     $edit = [
-      'fusion_connector_types[node--page]' => TRUE,
+      'fusion_connector_types[node--article]' => 0,
     ];
     $this->drupalPostForm(
       'admin/config/services/fusion_connector',
@@ -81,7 +81,7 @@ class FusionConnectorConfigFormsTest extends BrowserTestBase {
 
     $config = $this->config('fusion_connector.settings');
     $disabledEntities = $config->get('disabled_entities');
-    $this->assertContains('node--page', $disabledEntities);
+    $this->assertContains('node--article', $disabledEntities);
   }
 
   /**
@@ -99,7 +99,7 @@ class FusionConnectorConfigFormsTest extends BrowserTestBase {
 
     // Disable the page entity fields from indexing.
     $edit = [
-      'fusion_connector_fieldsaccess[nid][0]' => TRUE,
+      'fusion_connector_fieldsaccess[uid][0]' => 0,
     ];
     $this->drupalPostForm(
       'admin/config/services/fusion_connector/access/node/page',
@@ -112,7 +112,7 @@ class FusionConnectorConfigFormsTest extends BrowserTestBase {
 
     $config = $this->config('fusion_connector.settings');
     $disabledFields = $config->get('disabled_fields');
-    $this->assertContains('nid', $disabledFields['node--page']);
+    $this->assertContains('uid', $disabledFields['node--page']);
   }
 
   /**
@@ -144,7 +144,7 @@ class FusionConnectorConfigFormsTest extends BrowserTestBase {
 
     // Disable the page entity from indexing on the ca language.
     $edit = [
-      'fusion_connector_entity_type_languages[ca][checked]' => TRUE,
+      'fusion_connector_entity_type_languages[ca][checked]' => 0,
     ];
     $this->drupalPostForm(
       'admin/config/services/fusion_connector/type_language_access/node/page',
@@ -180,7 +180,7 @@ class FusionConnectorConfigFormsTest extends BrowserTestBase {
 
     // Disable a language from being indexed.
     $edit = [
-      'fusion_connector_languages[ca][checked]' => TRUE,
+      'fusion_connector_languages[ca][checked]' => 0,
     ];
     $this->drupalPostForm(
       'admin/config/services/fusion_connector/languages',

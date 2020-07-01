@@ -82,7 +82,7 @@ class FusionConnectorLanguageAccessForm extends ConfigFormBase {
     $checked_values = [];
     if (count($allowed_languages)) {
       foreach ($allowed_languages as $key => $value) {
-        if ($value['checked'] == 1) {
+        if ($value['checked'] == 0) {
           $checked_values[] = $key;
         }
       }
@@ -112,7 +112,7 @@ class FusionConnectorLanguageAccessForm extends ConfigFormBase {
     $header = [
       t('Language'),
       [
-        'data'  => t('Disable indexing'),
+        'data'  => t('Enable indexing'),
         'class' => ['checkbox'],
       ],
     ];
@@ -131,7 +131,7 @@ class FusionConnectorLanguageAccessForm extends ConfigFormBase {
         ];
         $form['fusion_connector_languages'][$value]['checked'] = [
           '#type'               => 'checkbox',
-          '#default_value'      => in_array(
+          '#default_value'      => !in_array(
             $value,
             $config->get('disabled_languages')
           ) ? 1 : 0,
