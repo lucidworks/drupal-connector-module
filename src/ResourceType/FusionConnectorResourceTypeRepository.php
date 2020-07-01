@@ -10,7 +10,7 @@ use Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface;
  */
 class FusionConnectorResourceTypeRepository {
 
-  const bundleTypes = ['node', 'taxonomy_term', 'taxonomy_vocabulary'];
+  const BUNDLETYPES = ['node', 'taxonomy_term', 'taxonomy_vocabulary'];
 
   /**
    * The JSON:API resource type repository.
@@ -31,7 +31,7 @@ class FusionConnectorResourceTypeRepository {
    *
    * @param \Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface $resource_type_repository
    *   The JSON:API resource type repository.
-   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface            $entity_bundle_info
+   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_bundle_info
    *   The entity type bundle info service.
    */
   public function __construct(
@@ -43,7 +43,8 @@ class FusionConnectorResourceTypeRepository {
   }
 
   /**
-   * Get all the available resource types, after the filtering is applied
+   * Get all the available resource types, after the filtering is applied.
+   *
    * {@inheritdoc}
    */
   public function getAllAvailableResourceTypes() {
@@ -76,7 +77,7 @@ class FusionConnectorResourceTypeRepository {
             $disabledLanguages
           ) && !$resource->isInternal() && in_array(
             $resource->getEntityTypeId(),
-            self::bundleTypes
+            self::BUNDLETYPES
           ) && $user->hasPermission(
             'view fusion_connector ' . $key
           ) && !in_array($key, $disabled_entities)) {
@@ -92,7 +93,8 @@ class FusionConnectorResourceTypeRepository {
   }
 
   /**
-   * Get all the enabled resource types,
+   * Get all the enabled resource types.
+   *
    * {@inheritdoc}
    */
   public function getAllEnabledResourceTypes() {
@@ -107,7 +109,7 @@ class FusionConnectorResourceTypeRepository {
     foreach ($allResources as $key => $resource) {
       if (!$resource->isInternal() && in_array(
           $resource->getEntityTypeId(),
-          self::bundleTypes
+          self::BUNDLETYPES
         ) && !in_array($key, $disabled_entities)) {
         $resources[$key] = $resource;
       }
@@ -117,7 +119,8 @@ class FusionConnectorResourceTypeRepository {
   }
 
   /**
-   * Get all the available resource types, no filtering is applied
+   * Get all the available resource types, no filtering is applied.
+   *
    * {@inheritdoc}
    */
   public function getAllAvailableResourceTypesNoFilters() {
@@ -127,7 +130,7 @@ class FusionConnectorResourceTypeRepository {
     ) : [];
     $resources = [];
 
-    foreach (self::bundleTypes as $value) {
+    foreach (self::BUNDLETYPES as $value) {
       $bundleInfo = $this->entityTypeBundleInfo->getBundleInfo(
         $value
       );
@@ -139,7 +142,7 @@ class FusionConnectorResourceTypeRepository {
               $value,
               $bundle
             );
-            //hide config for disabled entities
+            // Hide config for disabled entities.
             if (!in_array($resource_config_id, $disabled_entities)) {
               $resources[$value][$bundle] = $entitiesArray;
             }
@@ -149,5 +152,7 @@ class FusionConnectorResourceTypeRepository {
     }
 
     return $resources;
+
   }
+
 }

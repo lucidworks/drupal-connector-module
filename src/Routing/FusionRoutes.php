@@ -2,12 +2,14 @@
 
 namespace Drupal\fusion_connector\Routing;
 
-use Drupal;
 use Drupal\jsonapi\ResourceType\ResourceType;
 use Drupal\jsonapi\Routing\Routes;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\RouteCollection;
 
+/**
+ * Rewrite JSON:API routes.
+ */
 class FusionRoutes extends Routes {
 
   /**
@@ -31,7 +33,7 @@ class FusionRoutes extends Routes {
     // JSON:API's routes: entry point + routes for every resource type.
     $resources = \Drupal::service('fusion_connector.repository')->getAllEnabledResourceTypes();
 
-    //get all the relatable resource types for the selected entities
+    // Get all the relatable resource types for the selected entities.
     $selectedResourcesTypeNames = [];
     foreach ($resources as $resource) {
       $this->getRecursiveRelatableResourceTypes(
@@ -77,16 +79,19 @@ class FusionRoutes extends Routes {
   }
 
   /**
-   * Get all the relatable resource types for the selected entities
+   * Get all the relatable resource types for the selected entities.
    *
-   * @param ResourceType $resource
-   * @param array        $selectedResourcesTypeNames
-   * @param array        $resources
+   * @param \Drupal\jsonapi\ResourceType\ResourceType $resource
+   *   Resource.
+   * @param array $selectedResourcesTypeNames
+   *   Selected Resources Type Names.
+   * @param array $resources
+   *   Resrouces.
    */
   public function getRecursiveRelatableResourceTypes(
-    $resource,
-    &$selectedResourcesTypeNames,
-    &$resources
+    ResourceType $resource,
+    array &$selectedResourcesTypeNames,
+    array &$resources
   ) {
     $includeRelatableResourceTypes = $resource->getRelatableResourceTypes();
     if (count($includeRelatableResourceTypes)) {
@@ -114,9 +119,9 @@ class FusionRoutes extends Routes {
   /**
    * Get a unique route name for the JSON:API resource type and route type.
    *
-   * @param ResourceType $resource_type
+   * @param \Drupal\jsonapi\ResourceType\ResourceType $resource_type
    *   The resource type for which the route collection should be created.
-   * @param string       $route_type
+   * @param string $route_type
    *   The route type. E.g. 'individual' or 'collection'.
    *
    * @return string
@@ -132,9 +137,9 @@ class FusionRoutes extends Routes {
   /**
    * Get a unique route name for the file upload resource type and route type.
    *
-   * @param ResourceType $resource_type
+   * @param \Drupal\jsonapi\ResourceType\ResourceType $resource_type
    *   The resource type for which the route collection should be created.
-   * @param string       $route_type
+   * @param string $route_type
    *   The route type. E.g. 'individual' or 'collection'.
    *
    * @return string
@@ -150,5 +155,7 @@ class FusionRoutes extends Routes {
       'file_upload',
       $route_type
     );
+
   }
+
 }

@@ -2,20 +2,20 @@
 
 namespace Drupal\Tests\fusion_connector\Functional;
 
-use Drupal\field\Entity\FieldConfig;
-use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\Tests\BrowserTestBase;
 
 /**
- * Tests Fusion Connector configuration forms
+ * Tests Fusion Connector configuration forms.
  *
- * @group block
+ * @group fusion_connector
  */
 class FusionConnectorConfigFormsTest extends BrowserTestBase {
 
   /**
    * An administrative user to configure the test environment.
+   *
+   * @var \Drupal\user\Entity\User
    */
   protected $adminUser;
 
@@ -24,14 +24,21 @@ class FusionConnectorConfigFormsTest extends BrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['fusion_connector', 'node','language',
-    'content_translation',];
+  public static $modules = [
+    'fusion_connector',
+    'node',
+    'language',
+    'content_translation',
+  ];
 
   /**
    * {@inheritdoc}
    */
   protected $defaultTheme = 'stark';
 
+  /**
+   * {@inheritdoc}
+   */
   protected function setUp() {
     parent::setUp();
 
@@ -45,11 +52,13 @@ class FusionConnectorConfigFormsTest extends BrowserTestBase {
   }
 
   /**
-   * Test the entities form configuration
+   * {@inheritdoc}
    */
   public function testEntitiesConfiguration() {
-    $this->drupalCreateContentType(['type' => 'page', 'name' => 'Basic page'])->save();
-    $this->drupalCreateContentType(['type' => 'article', 'name' => 'Article'])->save();
+    $this->drupalCreateContentType(['type' => 'page', 'name' => 'Basic page'])
+      ->save();
+    $this->drupalCreateContentType(['type' => 'article', 'name' => 'Article'])
+      ->save();
 
     // Check if the fusion connector settings page is available.
     $this->drupalGet('admin/config/services/fusion_connector');
@@ -61,7 +70,11 @@ class FusionConnectorConfigFormsTest extends BrowserTestBase {
     $edit = [
       'fusion_connector_types[node--article]' => 0,
     ];
-    $this->drupalPostForm('admin/config/services/fusion_connector' , $edit, t('Save configuration'));
+    $this->drupalPostForm(
+      'admin/config/services/fusion_connector',
+      $edit,
+      t('Save configuration')
+    );
     $this->assertText('The configuration options have been saved.');
     $this->assertFieldChecked('fusion_connector_types[node--page]');
     $this->assertNoFieldChecked('fusion_connector_types[node--article]');
@@ -72,14 +85,14 @@ class FusionConnectorConfigFormsTest extends BrowserTestBase {
   }
 
   /**
-   * Test fields filters form for an entity
+   * {@inheritdoc}
    */
   public function testFilterFieldsForm() {
-    $this->drupalCreateContentType(['type' => 'page', 'name' => 'Basic page'])->save();
+    $this->drupalCreateContentType(['type' => 'page', 'name' => 'Basic page'])
+      ->save();
 
     // Check if the visibility setting is available.
     $this->drupalGet('admin/config/services/fusion_connector/access/node/page');
-
 
     $this->assertField('fusion_connector_fieldsaccess[nid][0]', 'nid');
     $this->assertField('fusion_connector_fieldsaccess[uid][0]', 'uid');
@@ -88,7 +101,11 @@ class FusionConnectorConfigFormsTest extends BrowserTestBase {
     $edit = [
       'fusion_connector_fieldsaccess[uid][0]' => 0,
     ];
-    $this->drupalPostForm('admin/config/services/fusion_connector/access/node/page' , $edit, t('Save configuration'));
+    $this->drupalPostForm(
+      'admin/config/services/fusion_connector/access/node/page',
+      $edit,
+      t('Save configuration')
+    );
     $this->assertText('The configuration options have been saved.');
     $this->assertFieldChecked('fusion_connector_fieldsaccess[nid][0]');
     $this->assertNoFieldChecked('fusion_connector_fieldsaccess[uid][0]');
@@ -99,7 +116,7 @@ class FusionConnectorConfigFormsTest extends BrowserTestBase {
   }
 
   /**
-   * Test disable language for an entity
+   * {@inheritdoc}
    */
   public function testDisableLanguageEntityForm() {
     $language = ConfigurableLanguage::createFromLangcode('ca');
@@ -112,18 +129,28 @@ class FusionConnectorConfigFormsTest extends BrowserTestBase {
     \Drupal::configFactory()->getEditable('language.negotiation')
       ->set('url.prefixes.ca', 'ca')
       ->save();
-    $this->drupalCreateContentType(['type' => 'page', 'name' => 'Basic page'])->save();
+    $this->drupalCreateContentType(['type' => 'page', 'name' => 'Basic page'])
+      ->save();
 
     // Check if the page language disable form is available.
-    $this->drupalGet('admin/config/services/fusion_connector/type_language_access/node/page');
+    $this->drupalGet(
+      'admin/config/services/fusion_connector/type_language_access/node/page'
+    );
 
-    $this->assertField('fusion_connector_entity_type_languages[ca][checked]', 'Catalan');
+    $this->assertField(
+      'fusion_connector_entity_type_languages[ca][checked]',
+      'Catalan'
+    );
 
     // Disable the page entity from indexing on the ca language.
     $edit = [
       'fusion_connector_entity_type_languages[ca][checked]' => 0,
     ];
-    $this->drupalPostForm('admin/config/services/fusion_connector/type_language_access/node/page' , $edit, t('Save configuration'));
+    $this->drupalPostForm(
+      'admin/config/services/fusion_connector/type_language_access/node/page',
+      $edit,
+      t('Save configuration')
+    );
 
     $config = $this->config('fusion_connector.settings');
     $disabledLanguages = $config->get('disabled_entity_type_languages');
@@ -131,9 +158,8 @@ class FusionConnectorConfigFormsTest extends BrowserTestBase {
     $this->assertNotContains('en', $disabledLanguages['node--page']);
   }
 
-
   /**
-   * Test disable language fro indexing
+   * {@inheritdoc}
    */
   public function testDisableLanguageForm() {
     $language = ConfigurableLanguage::createFromLangcode('ca');
@@ -150,14 +176,17 @@ class FusionConnectorConfigFormsTest extends BrowserTestBase {
     // Check if the language setting is available.
     $this->drupalGet('admin/config/services/fusion_connector/languages');
 
-
     $this->assertField('fusion_connector_languages[ca][checked]', 'Catalan');
 
     // Disable a language from being indexed.
     $edit = [
       'fusion_connector_languages[ca][checked]' => 0,
     ];
-    $this->drupalPostForm('admin/config/services/fusion_connector/languages' , $edit, t('Save configuration'));
+    $this->drupalPostForm(
+      'admin/config/services/fusion_connector/languages',
+      $edit,
+      t('Save configuration')
+    );
 
     $config = $this->config('fusion_connector.settings');
     $disabledLanguages = $config->get('disabled_languages');

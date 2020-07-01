@@ -11,7 +11,7 @@ use Drupal\jsonapi\ResourceType\ResourceType;
 use Drupal\jsonapi\Revisions\VersionByRel;
 use Drupal\jsonapi\JsonApiResource\ResourceObject as JsonApiResourceObject;
 use Drupal\jsonapi\Routing\Routes;
-use \Drupal\jsonapi\JsonApiResource\LinkCollection;
+use Drupal\jsonapi\JsonApiResource\LinkCollection;
 use Drupal\fusion_connector\Routing\FusionRoutes;
 use Drupal\jsonapi\JsonApiResource\Link;
 
@@ -75,12 +75,8 @@ class ResourceObject extends JsonApiResourceObject {
           // link for the represented version. This helps a client track
           // revision changes and to disambiguate resource objects with the same
           // `type` and `id` in a `version-history` collection.
-          $self_with_version_url = $self_url->setOption(
-            'query',
-            [
-              JsonApiSpec::VERSION_QUERY_PARAMETER => 'id:' . $entity->getRevisionId(
-                )
-            ]
+          $self_with_version_url = $self_url->setOption('query',
+            [JsonApiSpec::VERSION_QUERY_PARAMETER => 'id:' . $entity->getRevisionId()]
           );
           $links = $links->withLink(
             'self',
