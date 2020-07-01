@@ -187,6 +187,8 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase {
       ->set('disabled_fields', $disabledFieldsSettings)
       ->save();
 
+    // Clear the cache after the fields setup is changed
+    drupal_flush_all_caches();
 
     parent::submitForm($form, $form_state);
   }
