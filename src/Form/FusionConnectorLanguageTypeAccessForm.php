@@ -8,11 +8,10 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\ProxyClass\Routing\RouteBuilder;
 use Drupal\jsonapi\ResourceType\ResourceTypeRepository;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class FussionConnectorLanguageAccessForm
+ * Class FussionConnectorLanguageAccessForm.
  *
  * @package Drupal\fusion_connector\Controller
  */
@@ -21,14 +20,14 @@ class FusionConnectorLanguageTypeAccessForm extends ConfigFormBase {
   /**
    * The current route match.
    *
-   * @var Request
+   * @var \Symfony\Component\HttpFoundation\Request
    */
   protected $request;
 
   /**
    * The JSON:API resource type repository.
    *
-   * @var ResourceTypeRepository
+   * @var \Drupal\jsonapi\ResourceType\ResourceTypeRepository
    */
   protected $resourceTypeRepository;
 
@@ -40,14 +39,14 @@ class FusionConnectorLanguageTypeAccessForm extends ConfigFormBase {
   /**
    * Constructs a \Drupal\system\ConfigFormBase object.
    *
-   * @param ConfigFactoryInterface                              $config_factory
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
-   * @param RouteBuilder                                        $router_builder
+   * @param \Drupal\Core\ProxyClass\Routing\RouteBuilder $router_builder
    *   The router builder to rebuild menus after saving config entity.
-   * @param \Symfony\Component\HttpFoundation\Request           $request
-   *   The request object that contains query params
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The request object that contains query params.
    * @param \Drupal\jsonapi\ResourceType\ResourceTypeRepository $resource_type_repository
-   *   The service that provides information aout all the entity types
+   *   The service that provides information about all the entity types.
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
@@ -188,5 +187,7 @@ class FusionConnectorLanguageTypeAccessForm extends ConfigFormBase {
     $this->routerBuilder->setRebuildNeeded();
 
     parent::submitForm($form, $form_state);
+
   }
+
 }

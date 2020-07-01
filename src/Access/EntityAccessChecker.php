@@ -9,8 +9,8 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\jsonapi\Exception\EntityAccessDeniedHttpException;
-use Drupal\fusion_connector\JsonApiResource\LabelOnlyResourceObject;
 use Drupal\jsonapi\JsonApiResource\ResourceObject;
+use Drupal\fusion_connector\JsonApiResource\ResourceObject as FusionConnectorResourceObject;
 use Drupal\jsonapi\Access\EntityAccessChecker as JsonApiEntityAccessChecker;
 use Drupal\jsonapi\JsonApiSpec;
 
@@ -21,18 +21,17 @@ use Drupal\jsonapi\JsonApiSpec;
  * have non-standard access checking logic. This class centralizes entity access
  * checking logic.
  *
- * @see      https://www.drupal.org/project/jsonapi/issues/3032787
- * @see      jsonapi.api.php
+ * @see https://www.drupal.org/project/jsonapi/issues/3032787
+ * @see jsonapi.api.php
  * @internal JSON:API maintains no PHP API. The API is the HTTP API. This class
  *           may change at any time and could break any dependencies on it.
- *
  */
 class EntityAccessChecker extends JsonApiEntityAccessChecker {
 
   /**
    * Get the object to normalize and the access based on the provided entity.
    *
-   * @param \Drupal\Core\Entity\EntityInterface   $entity
+   * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity to test access for.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   (optional) The account with which access should be checked. Defaults to
@@ -63,7 +62,7 @@ class EntityAccessChecker extends JsonApiEntityAccessChecker {
       )
     );
 
-    $account = $account ? : $this->currentUser;
+    $account = $account ?: $this->currentUser;
     $resource_type = $this->resourceTypeRepository->get(
       $entity->getEntityTypeId(),
       $entity->bundle()
@@ -97,7 +96,8 @@ class EntityAccessChecker extends JsonApiEntityAccessChecker {
       \Drupal::request()->getRequestUri(),
       $container->getParameter('fusion_connector.base_path')
     )) {
-      //disable the access to an entity if the langguage is disabled for that entity type of the current language is disabled
+      // Disable the access to an entity if the language is disabled for that
+      // entity type of the current language is disabled.
       if (in_array(
           $entity->language()->getId(),
           $disabledLanguages
@@ -116,7 +116,7 @@ class EntityAccessChecker extends JsonApiEntityAccessChecker {
         );
       }
 
-      return \Drupal\fusion_connector\JsonApiResource\ResourceObject::createFromEntity(
+      return FusionConnectorResourceObject::createFromEntity(
         $resource_type,
         $entity
       );
@@ -129,9 +129,9 @@ class EntityAccessChecker extends JsonApiEntityAccessChecker {
   /**
    * Checks access to the given entity.
    *
-   * @param \Drupal\Core\Entity\EntityInterface   $entity
+   * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity for which access should be evaluated.
-   * @param string                                $operation
+   * @param string $operation
    *   The entity operation for which access should be evaluated.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   (optional) The account with which access should be checked. Defaults to
@@ -171,7 +171,7 @@ class EntityAccessChecker extends JsonApiEntityAccessChecker {
       }
     }
 
-    //check fusion access
+    // Check fusion access.
     $userHasAccess = FALSE;
     if ($account->hasPermission(
       'view fusion_connector ' . $entity->getEntityTypeId(
@@ -179,12 +179,14 @@ class EntityAccessChecker extends JsonApiEntityAccessChecker {
     )) {
       $userHasAccess = TRUE;
     }
-    //if no access found, return forbidden
+    // If no access found, return forbidden.
     if (!$userHasAccess) {
       return AccessResult::forbidden(
         'In fusion connector have no access to this resource!'
       );
     }
+
     return $access;
   }
+
 }

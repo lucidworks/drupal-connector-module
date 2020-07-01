@@ -25,7 +25,6 @@ final class LabelOnlyResourceObject extends ResourceObject {
    */
   protected $entity;
 
-
   /**
    * {@inheritdoc}
    */

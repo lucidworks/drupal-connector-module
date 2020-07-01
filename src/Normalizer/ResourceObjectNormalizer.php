@@ -10,16 +10,17 @@ use Drupal\jsonapi\JsonApiResource\ResourceObject;
 use Drupal\jsonapi\Normalizer\Value\CacheableNormalization;
 use Drupal\jsonapi\Normalizer\Value\CacheableOmission;
 use Drupal\jsonapi\Normalizer\ResourceObjectNormalizer as JsonApiResourceObjectNormalizer;
-use \Drupal\jsonapi\EventSubscriber\ResourceObjectNormalizationCacher;
+use Drupal\jsonapi\EventSubscriber\ResourceObjectNormalizationCacher;
+use Drupal\fusion_connector\JsonApiResource\Relationship as FusionConnectorRelationship;
 
 /**
  * Converts the JSON:API module ResourceObject into a JSON:API array structure.
  *
- * @internal JSON:API maintains no PHP API since its API is the HTTP API. This
- *   class may change at any time and this will break any dependencies on it.
- *
  * @see https://www.drupal.org/project/jsonapi/issues/3032787
  * @see jsonapi.api.php
+ * @internal JSON:API maintains no PHP API since its API is the HTTP API. This
+ *           class may change at any time and this will break any dependencies
+ *           on it.
  */
 class ResourceObjectNormalizer extends JsonApiResourceObjectNormalizer {
 
@@ -65,16 +66,20 @@ class ResourceObjectNormalizer extends JsonApiResourceObjectNormalizer {
       $field_names = array_keys($fields);
     }
 
-    if($context['is_fusion_path'] === true) {
-      //remove filtered fields
+    if ($context['is_fusion_path'] === TRUE) {
+      // Remove filtered fields.
       $config = \Drupal::config('fusion_connector.settings');
       $disabledFields = $config->get('disabled_fields');
-      if(count($disabledFields)) {
-        $resource_config_id = sprintf('%s--%s', $object->getResourceType()->getEntityTypeId(), $object->getResourceType()->getBundle());
-        if(in_array($resource_config_id, array_keys($disabledFields))) {
+      if (count($disabledFields)) {
+        $resource_config_id = sprintf(
+          '%s--%s',
+          $object->getResourceType()->getEntityTypeId(),
+          $object->getResourceType()->getBundle()
+        );
+        if (in_array($resource_config_id, array_keys($disabledFields))) {
           foreach ($disabledFields[$resource_config_id] as $disableField) {
             foreach ($field_names as $key => $field) {
-              if($field == $disableField) {
+              if ($field == $disableField) {
                 unset($field_names[$key]);
               }
             }
@@ -83,23 +88,42 @@ class ResourceObjectNormalizer extends JsonApiResourceObjectNormalizer {
       }
     }
 
-    $normalization_parts = $this->getNormalization($field_names, $object, $format, $context);
+    $normalization_parts = $this->getNormalization(
+      $field_names,
+      $object,
+      $format,
+      $context
+    );
 
     // Keep only the requested fields (the cached normalization gradually grows
     // to the complete set of fields).
     $fields = $normalization_parts[ResourceObjectNormalizationCacher::RESOURCE_CACHE_SUBSET_FIELDS];
-    $field_normalizations = array_intersect_key($fields, array_flip($field_names));
+    $field_normalizations = array_intersect_key(
+      $fields,
+      array_flip($field_names)
+    );
 
-    $relationship_field_names = array_keys($resource_type->getRelatableResourceTypes());
-    $attributes = array_diff_key($field_normalizations, array_flip($relationship_field_names));
-    $relationships = array_intersect_key($field_normalizations, array_flip($relationship_field_names));
+    $relationship_field_names = array_keys(
+      $resource_type->getRelatableResourceTypes()
+    );
+    $attributes = array_diff_key(
+      $field_normalizations,
+      array_flip($relationship_field_names)
+    );
+    $relationships = array_intersect_key(
+      $field_normalizations,
+      array_flip($relationship_field_names)
+    );
     $entity_normalization = array_filter(
       $normalization_parts[ResourceObjectNormalizationCacher::RESOURCE_CACHE_SUBSET_BASE] + [
-        'attributes' => CacheableNormalization::aggregate($attributes)->omitIfEmpty(),
-        'relationships' => CacheableNormalization::aggregate($relationships)->omitIfEmpty(),
+        'attributes'    => CacheableNormalization::aggregate($attributes)
+          ->omitIfEmpty(),
+        'relationships' => CacheableNormalization::aggregate($relationships)
+          ->omitIfEmpty(),
       ]
     );
-    return CacheableNormalization::aggregate($entity_normalization)->withCacheableDependency($object);
+    return CacheableNormalization::aggregate($entity_normalization)
+      ->withCacheableDependency($object);
   }
 
   /**
@@ -139,7 +163,7 @@ class ResourceObjectNormalizer extends JsonApiResourceObjectNormalizer {
           \Drupal::request()->getRequestUri(),
           $container->getParameter('fusion_connector.base_path')
         )) {
-          $relationship = \Drupal\fusion_connector\JsonApiResource\Relationship::createFromEntityReferenceField(
+          $relationship = FusionConnectorRelationship::createFromEntityReferenceField(
             $resource_object,
             $field
           );
@@ -173,11 +197,8 @@ class ResourceObjectNormalizer extends JsonApiResourceObjectNormalizer {
       // @todo Replace this workaround after https://www.drupal.org/node/3043245
       //   or remove the need for this in https://www.drupal.org/node/2942975.
       //   See \Drupal\layout_builder\Normalizer\LayoutEntityDisplayNormalizer.
-      if ($context['resource_object']->getResourceType()
-          ->getDeserializationTargetClass(
-          ) === 'Drupal\layout_builder\Entity\LayoutBuilderEntityViewDisplay' && $context['resource_object']->getField(
-          'third_party_settings'
-        ) === $field) {
+      if ($context['resource_object']->getResourceType()->getDeserializationTargetClass() === 'Drupal\layout_builder\Entity\LayoutBuilderEntityViewDisplay' &&
+        $context['resource_object']->getField('third_party_settings') === $field) {
         unset($field['layout_builder']['sections']);
       }
 

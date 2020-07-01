@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface;
 
 /**
  * Provides dynamic permissions of the taxonomy module.
@@ -41,10 +42,9 @@ class FusionConnectorPermissions implements ContainerInjectionInterface {
   /**
    * The bundle information service.
    *
-   * @var \Drupal\fusion_connector\ResourceType\FusionConnectorResourceTypeRepository
+   * @var \Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface
    */
-  protected $resource_type;
-
+  protected $resourceType;
 
   /**
    * Constructs a TaxonomyPermissions instance.
@@ -53,17 +53,17 @@ class FusionConnectorPermissions implements ContainerInjectionInterface {
    *   The entity type manager.
    * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $bundle_info
    *   Bundle information service.
-   * @param \Drupal\fusion_connector\ResourceType\FusionConnectorResourceTypeRepository $resource_type
-   *   Bundle information service.
+   * @param \Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface $resourceType
+   *   Fusion connector resource type repository.
    */
   public function __construct(
     EntityTypeManagerInterface $entity_type_manager,
     EntityTypeBundleInfoInterface $bundle_info,
-    $resource_type
+    ResourceTypeRepositoryInterface $resourceType
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->bundleInfo = $bundle_info;
-    $this->resource_type = $resource_type;
+    $this->resourceType = $resourceType;
   }
 
   /**
@@ -84,8 +84,7 @@ class FusionConnectorPermissions implements ContainerInjectionInterface {
    *   Permissions array.
    */
   public function permissions() {
-
-   $types = \Drupal::service('fusion_connector.repository')->getAllAvailableResourceTypesNoFilters();
+    $types = \Drupal::service('fusion_connector.repository')->getAllAvailableResourceTypesNoFilters();
     $permissions = [];
 
     foreach ($types as $bundle => $entities) {
@@ -104,5 +103,7 @@ class FusionConnectorPermissions implements ContainerInjectionInterface {
       }
     }
     return $permissions;
+
   }
+
 }
