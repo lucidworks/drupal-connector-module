@@ -71,7 +71,7 @@ class FusionConnectorPermissionsTest extends JsonApiFunctionalTestBase {
     $this->createDefaultContent(3, 1, FALSE, FALSE, static::IS_NOT_MULTILINGUAL);
 
     //create a user only with view fusion_connector taxonomy_term--tags permission
-    $user = $this->drupalCreateUser(['view fusion_connector taxonomy_term--tags'], 'testUserTagAccess');
+    $user = $this->drupalCreateUser(['view fusion_connector taxonomy_term--tags', 'view fusion_connector node--article'], 'testUserTagAccess');
     $this->drupalLogin($user);
 
     //get the taxonomy tags list
@@ -88,9 +88,9 @@ class FusionConnectorPermissionsTest extends JsonApiFunctionalTestBase {
     $this->assertSession()->statusCodeEquals(200);
     $this->assertNotNull($response);
     $this->assertIsArray($response['data']);
-    //check that we have response, but only with title as key in array for each element
+    //check that we have response,
     $this->assertEqual(count($response['data']), 3);
-    $this->assertArrayNotHasKey('field_sort1', $response['data'][0]['attributes']);
+    $this->assertArrayHasKey('field_sort1', $response['data'][0]['attributes']);
     $this->assertArrayHasKey('title', $response['data'][0]['attributes']);
     $this->drupalLogout();
 
@@ -114,11 +114,8 @@ class FusionConnectorPermissionsTest extends JsonApiFunctionalTestBase {
     $this->assertSession()->statusCodeEquals(200);
     $this->assertNotNull($response);
     $this->assertIsArray($response['data']);
-    //check that we have response, but only with name as key in array for each element
-    $this->assertEqual(count($response['data']), 1);
-    $this->assertArrayNotHasKey('status', $response['data'][0]['attributes']);
-    $this->assertArrayHasKey('name', $response['data'][0]['attributes']);
+    //check that we have no response,
+    $this->assertEqual(count($response['data']), 0);
     $this->drupalLogout();
-
   }
 }
