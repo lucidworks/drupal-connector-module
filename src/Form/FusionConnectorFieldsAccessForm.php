@@ -130,7 +130,7 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase {
 
     $form['fusion_connector_fieldsaccess'] = [
       '#type'    => 'table',
-      '#header'  => [$this->t('Field name'), $this->t('Disable indexing')],
+      '#header'  => [$this->t('Field name'), $this->t('Enable indexing')],
       '#caption' => $this->t(
         'You are editing the fields filtering for %item.',
         ['%item' => $entity_type_id]
@@ -150,7 +150,7 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase {
             ) ? (in_array(
               $field,
               $disabledFields[$resource_config_id]
-            ) ? 1 : 0) : 0,
+            ) ? 0 : 1) : 1,
 
           ],
 
@@ -166,14 +166,14 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $fusionConnectorSettings = $this->config('fusion_connector.settings');
     $disabledFieldsSettings = $fusionConnectorSettings->get('disabled_fields');
-    $disabledFields = array_filter(
+    $enabledFields = array_filter(
       $form_state->getValue('fusion_connector_fieldsaccess')
     );
 
     $disabledFieldsSettings[$form['id']['#value']] = [];
-    if (count($disabledFields)) {
-      foreach ($disabledFields as $key => $value) {
-        if ($value[0] == 1) {
+    if (count($enabledFields)) {
+      foreach ($enabledFields as $key => $value) {
+        if ($value[0] == 0) {
           $disabledFieldsSettings[$form['id']['#value']][] = $key;
         }
       }
@@ -181,6 +181,7 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase {
     $this->config('fusion_connector.settings')
       ->set('disabled_fields', $disabledFieldsSettings)
       ->save();
+
 
     parent::submitForm($form, $form_state);
   }
