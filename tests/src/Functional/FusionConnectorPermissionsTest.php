@@ -98,10 +98,6 @@ class FusionConnectorPermissionsTest extends JsonApiFunctionalTestBase {
     $this->assertIsArray($response['data']);
     // Check that we have response,
     $this->assertEqual(count($response['data']), 3);
-    $this->assertArrayNotHasKey(
-      'field_sort1',
-      $response['data'][0]['attributes']
-    );
     $this->assertArrayHasKey('title', $response['data'][0]['attributes']);
     $this->drupalLogout();
 
