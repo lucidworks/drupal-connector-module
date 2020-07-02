@@ -65,29 +65,29 @@ class ResourceObjectNormalizer extends JsonApiResourceObjectNormalizer {
     else {
       $field_names = array_keys($fields);
     }
-
     if ($context['is_fusion_path'] === TRUE) {
       // Remove filtered fields.
       $config = \Drupal::config('fusion_connector.settings');
       $disabledFields = $config->get('disabled_fields');
+
       if (count($disabledFields)) {
         $resource_config_id = sprintf(
           '%s--%s',
           $object->getResourceType()->getEntityTypeId(),
           $object->getResourceType()->getBundle()
         );
+        
         if (in_array($resource_config_id, array_keys($disabledFields))) {
           foreach ($disabledFields[$resource_config_id] as $disableField) {
-            foreach ($field_names as $key => $field) {
-              if ($field == $disableField) {
-                unset($field_names[$key]);
+            foreach ($fields as $key => $field) {
+              if ($field->getName() == $disableField) {
+                array_splice($field_names, array_search($key, $field_names ), 1);
               }
             }
           }
         }
       }
     }
-
     $normalization_parts = $this->getNormalization(
       $field_names,
       $object,
