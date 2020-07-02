@@ -36,7 +36,7 @@ function fusion_connector_help($route_name, RouteMatchInterface $route_match) {
           'You can filter the specific fields for a content type entity.'
         ) . '</p>';
       $output .= '<p>' . t(
-          'If the DISABLED checkbox is checked, it means that the field will not appear in the JSON:API file.'
+          'If the ENABLE INDEXING checkbox is not checked, it means that the field will not appear in the JSON:API file.'
         ) . '</p>';
       return $output;
     case 'fusion_connector.settings.languages':
