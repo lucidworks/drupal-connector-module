@@ -19,7 +19,8 @@ use Drupal\Core\Entity\EntityFieldManager;
  *
  * @package Drupal\fusion_connector\Controller
  */
-class FusionConnectorFieldsAccessForm extends ConfigFormBase {
+class FusionConnectorFieldsAccessForm extends ConfigFormBase
+{
 
   /**
    * The current route match.
@@ -78,7 +79,8 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
+  public static function create(ContainerInterface $container)
+  {
     return new static(
       $container->get('config.factory'),
       $container->get('router.builder'),
@@ -91,21 +93,25 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  protected function getEditableConfigNames() {
+  protected function getEditableConfigNames()
+  {
     return ['fusion_connector.settings'];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getFormId() {
+  public function getFormId()
+  {
     return 'fussion_connector_fieldsaccess_form';
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state)
+  {
+    $defaultValues = [];
     $entity_type_id = $this->request->get('entity_type_id');
     $bundle = $this->request->get('bundle');
 
@@ -133,9 +139,12 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase {
 
     $fieldsDefinition = $this->getAllFields($entity_type, $bundle);
 
+    $header = [
+      'enabled_fields' => t('Enable indexing'),
+    ];
     $form['fusion_connector_fieldsaccess'] = [
-      '#type'    => 'table',
-      '#header'  => [$this->t('Field name'), $this->t('Enable indexing')],
+      '#type' => 'tableselect',
+      '#header' => $header,
       '#caption' => $this->t(
         'You are editing the fields filtering for %item.',
         ['%item' => $entity_type_id]
@@ -145,40 +154,37 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase {
 
     if (count($fieldsDefinition)) {
       foreach ($fieldsDefinition as $field) {
-        $form['fusion_connector_fieldsaccess'][$field] = [
-          'label' => ['#plain_text' => $field],
-          [
-            '#type'          => 'checkbox',
-            '#default_value' => array_key_exists(
-              $resource_config_id,
-              $disabledFields
-            ) ? (in_array(
-              $field,
-              $disabledFields[$resource_config_id]
-            ) ? 0 : 1) : 1,
+        $row['enabled_fields'] = $field;
 
-          ],
+        $defaultValues[$field] = array_key_exists(
+          $resource_config_id,
+          $disabledFields
+        ) ? (in_array(
+          $field,
+          $disabledFields[$resource_config_id]
+        ) ? false : true) : true;
 
-        ];
+        $form['fusion_connector_fieldsaccess']['#options'][$field] = $row;
       }
     }
+    $form['fusion_connector_fieldsaccess']['#default_value'] = $defaultValues;
+
     return parent::buildForm($form, $form_state);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state)
+  {
     $fusionConnectorSettings = $this->config('fusion_connector.settings');
     $disabledFieldsSettings = $fusionConnectorSettings->get('disabled_fields');
-    $enabledFields = array_filter(
-      $form_state->getValue('fusion_connector_fieldsaccess')
-    );
+    $enabledFields = $form_state->getValue('fusion_connector_fieldsaccess');
 
     $disabledFieldsSettings[$form['id']['#value']] = [];
     if (count($enabledFields)) {
       foreach ($enabledFields as $key => $value) {
-        if ($value[0] == 0) {
+        if ($value === 0) {
           $disabledFieldsSettings[$form['id']['#value']][] = $key;
         }
       }
@@ -202,28 +208,29 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase {
    * @return string[]
    *   Return array.
    */
-  protected function getAllFields(EntityTypeInterface $entity_type, $bundle) {
+  protected function getAllFields(EntityTypeInterface $entity_type, $bundle)
+  {
 
-    if (is_a($entity_type->getClass(), FieldableEntityInterface::class, TRUE)) {
+    if (is_a($entity_type->getClass(), FieldableEntityInterface::class, true)) {
       $field_definitions = $this->entityFieldManager->getFieldDefinitions(
         $entity_type->id(),
         $bundle
       );
+
       return array_keys($field_definitions);
-    }
-    elseif (is_a(
+    } elseif (is_a(
       $entity_type->getClass(),
       ConfigEntityInterface::class,
-      TRUE
+      true
     )) {
       $export_properties = $entity_type->getPropertiesToExport();
-      if ($export_properties !== NULL) {
+      if ($export_properties !== null) {
         return array_keys($export_properties);
-      }
-      else {
+      } else {
         return ['id', 'type', 'uuid', '_core'];
       }
     }
+
     return [];
 
   }
