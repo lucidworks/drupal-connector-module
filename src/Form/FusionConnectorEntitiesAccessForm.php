@@ -86,7 +86,7 @@ class FusionConnectorEntitiesAccessForm extends ConfigFormBase
     $multiLanguage = count($this->languageManager->getLanguages()) > 1;
 
     $header = [
-      'disabled_entities' => t('Enable indexing'),
+      'enabled_entities' => t('Enable indexing'),
     ];
 
     $header['operations'] = $this->t('Operations');
@@ -111,7 +111,7 @@ class FusionConnectorEntitiesAccessForm extends ConfigFormBase
       if (count($entities)) {
         foreach ($entities as $type => $label) {
           $resource_config_id = sprintf('%s--%s', $bundle, $type);
-          $row['disabled_entities'] = $label['label'];
+          $row['enabled_entities'] = $label['label'];
 
           $row['operations']['data'] = [
             '#type' => 'operations',

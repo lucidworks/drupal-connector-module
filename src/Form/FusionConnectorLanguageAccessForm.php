@@ -76,13 +76,11 @@ class FusionConnectorLanguageAccessForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $allowed_languages = array_filter(
-      $form_state->getValue('fusion_connector_languages')
-    );
+    $allowed_languages = $form_state->getValue('fusion_connector_languages');
     $checked_values = [];
     if (count($allowed_languages)) {
       foreach ($allowed_languages as $key => $value) {
-        if ($value['checked'] == 0) {
+        if ($value === 0) {
           $checked_values[] = $key;
         }
       }
@@ -109,15 +107,13 @@ class FusionConnectorLanguageAccessForm extends ConfigFormBase {
    *   Return the form.
    */
   private function buildLanguagesFields(array &$form, Config $config) {
+    $defaultValues = [];
+    $disabledLanguages = $config->get('disabled_languages');
     $header = [
-      t('Language'),
-      [
-        'data'  => t('Enable indexing'),
-        'class' => ['checkbox'],
-      ],
+      'enabled_languages' => t('Enable indexing'),
     ];
     $form['fusion_connector_languages'] = [
-      '#type'   => 'table',
+      '#type'   => 'tableselect',
       '#header' => $header,
       '#sticky' => TRUE,
     ];
@@ -126,21 +122,17 @@ class FusionConnectorLanguageAccessForm extends ConfigFormBase {
 
     if (count($languages)) {
       foreach ($languages as $value => $language) {
-        $form['fusion_connector_languages'][$value]['label'] = [
-          '#plain_text' => $language->getName(),
-        ];
-        $form['fusion_connector_languages'][$value]['checked'] = [
-          '#type'               => 'checkbox',
-          '#default_value'      => !in_array(
-            $value,
-            $config->get('disabled_languages')
-          ) ? 1 : 0,
-          '#wrapper_attributes' => [
-            'class' => ['checkbox'],
-          ],
-        ];
+        $row['enabled_languages'] = $language->getName();
+
+        $defaultValues[$value] = (in_array(
+          $value,
+          $disabledLanguages
+        ) ? false : true);
+
+        $form['fusion_connector_languages']['#options'][$value] = $row;
       }
     }
+    $form['fusion_connector_languages']['#default_value'] = $defaultValues;
 
     return $form;
   }

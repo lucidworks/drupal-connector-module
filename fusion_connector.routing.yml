@@ -37,6 +37,6 @@ fusion_connector.settings.edit_languagetypeaccess_form:
   path: '/admin/config/services/fusion_connector/type_language_access/{bundle}/{entity_type_id}'
   defaults:
     _form: '\Drupal\fusion_connector\Form\FusionConnectorLanguageTypeAccessForm'
-    _title: 'Fusion connector edit fields access'
+    _title: 'Fusion connector edit language access for type'
   requirements:
     _permission: 'administer site configuration'

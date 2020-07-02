@@ -45,7 +45,7 @@ function fusion_connector_help($route_name, RouteMatchInterface $route_match) {
           'You can disable content exposure for a specific language '
         ) . '</p>';
       $output .= '<p>' . t(
-          'If the DISABLED checkbox is checked, it means that no entity will appear for that language '
+          'If the ENABLE INDEXING checkbox is not checked, it means that no entity will appear for that language '
         ) . '</p>';
       return $output;
     case 'fusion_connector.settings.edit_languagetypeaccess_form':
@@ -54,7 +54,7 @@ function fusion_connector_help($route_name, RouteMatchInterface $route_match) {
           'You can disable content exposure for a specific language for a specific entity type.'
         ) . '</p>';
       $output .= '<p>' . t(
-          'If the DISABLED checkbox is checked, it means that no content will appear for that language, for that type'
+          'If the ENABLE INDEXING checkbox is not checked, it means that no content will appear for that language, for that type'
         ) . '</p>';
       return $output;
     default:

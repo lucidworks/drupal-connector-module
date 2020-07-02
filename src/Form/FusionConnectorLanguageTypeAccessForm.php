@@ -90,6 +90,7 @@ class FusionConnectorLanguageTypeAccessForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    $defaultValues = [];
     $config = $this->config('fusion_connector.settings');
     $disabledLanguagesEntityType = $config->get(
       'disabled_entity_type_languages'
@@ -116,17 +117,14 @@ class FusionConnectorLanguageTypeAccessForm extends ConfigFormBase {
     }
 
     $header = [
-      t('Language'),
-      [
-        'data'  => t('Enable indexing'),
-        'class' => ['checkbox'],
-      ],
+      'enabled_languages' => t('Enable indexing'),
     ];
+
     $form['fusion_connector_entity_type_languages'] = [
-      '#type'    => 'table',
+      '#type'    => 'tableselect',
       '#header'  => $header,
       '#caption' => $this->t(
-        'Choose what languages to disable for %resource_type:',
+        'Choose what languages are enabled for %resource_type:',
         ['%resource_type' => $resource_type->getTypeName()]
       ),
       '#sticky'  => TRUE,
@@ -138,27 +136,28 @@ class FusionConnectorLanguageTypeAccessForm extends ConfigFormBase {
 
     if (count($languages)) {
       foreach ($languages as $value => $language) {
-        $form['fusion_connector_entity_type_languages'][$value]['label'] = [
-          '#plain_text' => $language->getName(),
-        ];
-        $form['fusion_connector_entity_type_languages'][$value]['checked'] = [
-          '#type'               => 'checkbox',
-          '#default_value'      => array_key_exists(
-            $resource_config_id,
-            $disabledLanguagesEntityType
-          ) ? (in_array(
-            $value,
-            $disabledLanguagesEntityType[$resource_config_id]
-          ) ? 0 : 1) : 1,
-          '#wrapper_attributes' => [
-            'class' => ['checkbox'],
-          ],
-        ];
-        if (in_array($value, $disabledLanguages)) {
+        $disabledGlobally = in_array($value, $disabledLanguages);
+        $row['enabled_languages'] = $language->getName();
+        if ($disabledGlobally) {
+          $row['enabled_languages'].= ' '.t('(disabled globally)');
+        }
+
+        if ($disabledGlobally) {
           $form['fusion_connector_entity_type_languages'][$value]['checked']['#disabled'] = TRUE;
         }
+
+        $defaultValues[$value] = array_key_exists(
+          $resource_config_id,
+          $disabledLanguagesEntityType
+        ) ? (in_array(
+          $value,
+          $disabledLanguagesEntityType[$resource_config_id]
+        ) ? false : true) : true;
+
+        $form['fusion_connector_entity_type_languages']['#options'][$value] = $row;
       }
     }
+    $form['fusion_connector_entity_type_languages']['#default_value'] = $defaultValues;
 
     return parent::buildForm($form, $form_state);
   }
@@ -174,7 +173,7 @@ class FusionConnectorLanguageTypeAccessForm extends ConfigFormBase {
     $checkedValues[$form['id']['#value']] = [];
     if (count($disabledLanguagesEntityType)) {
       foreach ($disabledLanguagesEntityType as $key => $value) {
-        if ($value['checked'] == 0) {
+        if ($value === 0) {
           $checkedValues[$form['id']['#value']][] = $key;
         }
       }
