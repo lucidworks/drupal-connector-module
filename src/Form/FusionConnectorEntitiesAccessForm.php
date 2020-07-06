@@ -206,6 +206,10 @@ class FusionConnectorEntitiesAccessForm extends ConfigFormBase
     $types['media'] = \Drupal::service("entity_type.bundle.info")->getBundleInfo(
       'media'
     );
+    $types['file'] = \Drupal::service("entity_type.bundle.info")->getBundleInfo(
+      'file'
+    );
+
     return $types;
   }
 }
