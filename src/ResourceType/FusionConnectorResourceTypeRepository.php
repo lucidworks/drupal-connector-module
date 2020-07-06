@@ -10,7 +10,7 @@ use Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface;
  */
 class FusionConnectorResourceTypeRepository {
 
-  const BUNDLETYPES = ['node', 'taxonomy_term', 'taxonomy_vocabulary'];
+  const BUNDLETYPES = ['node', 'taxonomy_term', 'taxonomy_vocabulary', 'media', 'media_type', 'file'];
 
   /**
    * The JSON:API resource type repository.
