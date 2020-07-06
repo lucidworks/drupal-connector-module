@@ -200,6 +200,12 @@ class FusionConnectorEntitiesAccessForm extends ConfigFormBase
     $types['taxonomy_vocabulary'] = \Drupal::service("entity_type.bundle.info")
       ->getBundleInfo('taxonomy_vocabulary');
 
+    $types['media_type'] = \Drupal::service("entity_type.bundle.info")->getBundleInfo(
+      'media_type'
+    );
+    $types['media'] = \Drupal::service("entity_type.bundle.info")->getBundleInfo(
+      'media'
+    );
     return $types;
   }
 }
