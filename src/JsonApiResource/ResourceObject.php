@@ -82,12 +82,13 @@ class ResourceObject extends JsonApiResourceObject {
             'self',
             new Link(new CacheableMetadata(), $self_with_version_url, 'self')
           );
-
-          $html_url = $entity->toUrl();
-          $links = $links->withLink(
-            'html',
-            new Link(new CacheableMetadata(), $html_url, 'self')
-          );
+          if ($entity->getEntityTypeId() == 'node') {
+            $html_url = $entity->toUrl();
+            $links = $links->withLink(
+              'html',
+              new Link(new CacheableMetadata(), $html_url, 'self')
+            );
+          }
         }
         if (!$entity->isDefaultRevision()) {
           $latest_version_url = $self_url->setOption(
