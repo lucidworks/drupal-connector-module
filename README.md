@@ -45,7 +45,7 @@ Fusion_connector provides a configuration page where users with the "administer 
 filter the exposed data.
 User permissions on the exposed resources can be managed in the Permissions page.
 
-### URL Structure
+## URL Structure
 
 A fusion_connector URL looks like this:
 
@@ -63,5 +63,6 @@ GET     /es/fusion/node/article
 All the filtering, sorting and pagination parameters the JSON:API module provides are available. More details are
 available on the [JSON:API documentation](https://www.drupal.org/docs/core-modules-and-themes/core-modules/jsonapi-module/jsonapi).
 
-### Drupal 9
+## Drupal 9
+
 This module is compatible with Drupal 9.
