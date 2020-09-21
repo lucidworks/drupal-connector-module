@@ -1,5 +1,5 @@
 {
-    "name": "fusion_connector",
+    "name": "lucidworks/fusion_connector",
     "type": "drupal-module",
     "description": "Fusion Connector Implementation",
     "keywords": [
