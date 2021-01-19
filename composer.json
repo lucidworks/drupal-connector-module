@@ -2,6 +2,7 @@
     "name": "lucidworks/fusion_connector",
     "type": "drupal-module",
     "description": "Fusion Connector Implementation",
+    "license": "MIT",
     "keywords": [
     ],
     "homepage": "https://www.drupal.org/project/fusion_connector",
