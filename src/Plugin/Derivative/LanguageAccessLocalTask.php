@@ -8,7 +8,7 @@ use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class LanguageAccessLocalTask.
+ * Class Language Access to Local Tasks.
  */
 class LanguageAccessLocalTask extends DeriverBase implements ContainerDeriverInterface {
 

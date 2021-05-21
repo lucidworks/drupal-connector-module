@@ -73,9 +73,12 @@ class FusionConnectorPermissionsTest extends JsonApiFunctionalTestBase {
       static::IS_NOT_MULTILINGUAL
     );
 
-    // Create a user only with view fusion_connector taxonomy_term--tags permission
+    // Create a user only with view fusion_connector
+    // taxonomy_term--tags permission.
     $user = $this->drupalCreateUser(
-      ['view fusion_connector taxonomy_term--tags', 'view fusion_connector node--article'],
+      ['view fusion_connector taxonomy_term--tags',
+        'view fusion_connector node--article',
+      ],
       'testUserTagAccess');
     $this->drupalLogin($user);
 
@@ -96,7 +99,7 @@ class FusionConnectorPermissionsTest extends JsonApiFunctionalTestBase {
     $this->assertSession()->statusCodeEquals(200);
     $this->assertNotNull($response);
     $this->assertIsArray($response['data']);
-    // Check that we have response,
+    // Check that we have response,.
     $this->assertEqual(count($response['data']), 3);
     $this->assertArrayHasKey('title', $response['data'][0]['attributes']);
     $this->drupalLogout();
@@ -127,7 +130,7 @@ class FusionConnectorPermissionsTest extends JsonApiFunctionalTestBase {
     $this->assertSession()->statusCodeEquals(200);
     $this->assertNotNull($response);
     $this->assertIsArray($response['data']);
-    // Check that we have no response,
+    // Check that we have no response,.
     $this->assertEqual(count($response['data']), 0);
     $this->drupalLogout();
   }

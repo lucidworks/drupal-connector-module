@@ -15,8 +15,7 @@ use Drupal\Core\Url;
  *
  * @package Drupal\fusion_connector\Form
  */
-class FusionConnectorEntitiesAccessForm extends ConfigFormBase
-{
+class FusionConnectorEntitiesAccessForm extends ConfigFormBase {
 
   /**
    * {@inheritdoc}
@@ -53,8 +52,7 @@ class FusionConnectorEntitiesAccessForm extends ConfigFormBase
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container)
-  {
+  public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
       $container->get('router.builder'),
@@ -65,24 +63,21 @@ class FusionConnectorEntitiesAccessForm extends ConfigFormBase
   /**
    * {@inheritdoc}
    */
-  protected function getEditableConfigNames()
-  {
+  protected function getEditableConfigNames() {
     return ['fusion_connector.settings'];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getFormId()
-  {
+  public function getFormId() {
     return 'fusion_connector_entities_access';
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state)
-  {
+  public function buildForm(array $form, FormStateInterface $form_state) {
     $multiLanguage = count($this->languageManager->getLanguages()) > 1;
 
     $header = [
@@ -98,7 +93,7 @@ class FusionConnectorEntitiesAccessForm extends ConfigFormBase
     $form['fusion_connector_types'] = [
       '#type' => 'tableselect',
       '#header' => $header,
-      '#sticky' => true,
+      '#sticky' => TRUE,
     ];
 
     $types = $this->getEntityTypes();
@@ -151,7 +146,7 @@ class FusionConnectorEntitiesAccessForm extends ConfigFormBase
           $form['fusion_connector_types']['#options'][$resource_config_id] = $row;
 
           if (!in_array($resource_config_id, $disabledEntities)) {
-            $defaultValues[$resource_config_id] = true;
+            $defaultValues[$resource_config_id] = TRUE;
           }
         }
       }
@@ -165,8 +160,7 @@ class FusionConnectorEntitiesAccessForm extends ConfigFormBase
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state)
-  {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $disabledEntitiesArray = [];
     $submitedEntities = $form_state->getValue('fusion_connector_types');
 
@@ -186,12 +180,9 @@ class FusionConnectorEntitiesAccessForm extends ConfigFormBase
   }
 
   /**
-   * @param $types
-   * @return mixed
+   * {@inheritdoc}
    */
-  private
-  function getEntityTypes()
-  {
+  private function getEntityTypes() {
     $types['node'] = \Drupal::service("entity_type.bundle.info")->getBundleInfo(
       'node'
     );
@@ -212,4 +203,5 @@ class FusionConnectorEntitiesAccessForm extends ConfigFormBase
 
     return $types;
   }
+
 }

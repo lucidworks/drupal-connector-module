@@ -45,7 +45,7 @@ class EntityResource extends JsonApiEntityResourse {
     Request $request,
     $response_code = 200
   ) {
-    /* @var \Drupal\Core\Field\EntityReferenceFieldItemListInterface $field_list */
+    /** @var \Drupal\Core\Field\EntityReferenceFieldItemListInterface $field_list */
     $field_list = $entity->get($resource_type->getInternalName($related));
     // Access will have already been checked by the RelationshipFieldAccess
     // service, so we don't need to call ::getAccessCheckedResourceObject().

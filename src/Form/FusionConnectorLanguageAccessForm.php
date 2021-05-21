@@ -127,7 +127,7 @@ class FusionConnectorLanguageAccessForm extends ConfigFormBase {
         $defaultValues[$value] = (in_array(
           $value,
           $disabledLanguages
-        ) ? false : true);
+        ) ? FALSE : TRUE);
 
         $form['fusion_connector_languages']['#options'][$value] = $row;
       }

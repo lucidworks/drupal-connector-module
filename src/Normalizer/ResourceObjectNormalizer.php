@@ -76,12 +76,12 @@ class ResourceObjectNormalizer extends JsonApiResourceObjectNormalizer {
           $object->getResourceType()->getEntityTypeId(),
           $object->getResourceType()->getBundle()
         );
-        
+
         if (in_array($resource_config_id, array_keys($disabledFields))) {
           foreach ($disabledFields[$resource_config_id] as $disableField) {
             foreach ($fields as $key => $field) {
               if ($field->getName() == $disableField) {
-                array_splice($field_names, array_search($key, $field_names ), 1);
+                array_splice($field_names, array_search($key, $field_names), 1);
               }
             }
           }

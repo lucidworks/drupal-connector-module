@@ -6,5 +6,3 @@ fusion_connector.settings:
 # Define a "Fusion Connector tab".
 fusion_connector.settings.languages:
   deriver: 'Drupal\fusion_connector\Plugin\Derivative\LanguageAccessLocalTask'
-
-

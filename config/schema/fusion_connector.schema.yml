@@ -29,5 +29,3 @@ fusion_connector.settings:
       label: Entities that will not be exposed
       sequence:
         - type: string
-
-

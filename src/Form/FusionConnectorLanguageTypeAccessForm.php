@@ -139,7 +139,7 @@ class FusionConnectorLanguageTypeAccessForm extends ConfigFormBase {
         $disabledGlobally = in_array($value, $disabledLanguages);
         $row['enabled_languages'] = $language->getName();
         if ($disabledGlobally) {
-          $row['enabled_languages'].= ' '.t('(disabled globally)');
+          $row['enabled_languages'] .= ' ' . t('(disabled globally)');
         }
 
         if ($disabledGlobally) {
@@ -152,7 +152,7 @@ class FusionConnectorLanguageTypeAccessForm extends ConfigFormBase {
         ) ? (in_array(
           $value,
           $disabledLanguagesEntityType[$resource_config_id]
-        ) ? false : true) : true;
+        ) ? FALSE : TRUE) : TRUE;
 
         $form['fusion_connector_entity_type_languages']['#options'][$value] = $row;
       }

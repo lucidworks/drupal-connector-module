@@ -19,8 +19,7 @@ use Drupal\Core\Entity\EntityFieldManager;
  *
  * @package Drupal\fusion_connector\Controller
  */
-class FusionConnectorFieldsAccessForm extends ConfigFormBase
-{
+class FusionConnectorFieldsAccessForm extends ConfigFormBase {
 
   /**
    * The current route match.
@@ -79,8 +78,7 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container)
-  {
+  public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
       $container->get('router.builder'),
@@ -93,24 +91,21 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase
   /**
    * {@inheritdoc}
    */
-  protected function getEditableConfigNames()
-  {
+  protected function getEditableConfigNames() {
     return ['fusion_connector.settings'];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getFormId()
-  {
+  public function getFormId() {
     return 'fussion_connector_fieldsaccess_form';
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state)
-  {
+  public function buildForm(array $form, FormStateInterface $form_state) {
     $defaultValues = [];
     $entity_type_id = $this->request->get('entity_type_id');
     $bundle = $this->request->get('bundle');
@@ -162,7 +157,7 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase
         ) ? (in_array(
           $field,
           $disabledFields[$resource_config_id]
-        ) ? false : true) : true;
+        ) ? FALSE : TRUE) : TRUE;
 
         $form['fusion_connector_fieldsaccess']['#options'][$field] = $row;
       }
@@ -175,8 +170,7 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state)
-  {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $fusionConnectorSettings = $this->config('fusion_connector.settings');
     $disabledFieldsSettings = $fusionConnectorSettings->get('disabled_fields');
     $enabledFields = $form_state->getValue('fusion_connector_fieldsaccess');
@@ -193,7 +187,6 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase
       ->set('disabled_fields', $disabledFieldsSettings)
       ->save();
 
-
     parent::submitForm($form, $form_state);
   }
 
@@ -208,25 +201,26 @@ class FusionConnectorFieldsAccessForm extends ConfigFormBase
    * @return string[]
    *   Return array.
    */
-  protected function getAllFields(EntityTypeInterface $entity_type, $bundle)
-  {
+  protected function getAllFields(EntityTypeInterface $entity_type, $bundle) {
 
-    if (is_a($entity_type->getClass(), FieldableEntityInterface::class, true)) {
+    if (is_a($entity_type->getClass(), FieldableEntityInterface::class, TRUE)) {
       $field_definitions = $this->entityFieldManager->getFieldDefinitions(
         $entity_type->id(),
         $bundle
       );
 
       return array_keys($field_definitions);
-    } elseif (is_a(
+    }
+    elseif (is_a(
       $entity_type->getClass(),
       ConfigEntityInterface::class,
-      true
+      TRUE
     )) {
       $export_properties = $entity_type->getPropertiesToExport();
-      if ($export_properties !== null) {
+      if ($export_properties !== NULL) {
         return array_keys($export_properties);
-      } else {
+      }
+      else {
         return ['id', 'type', 'uuid', '_core'];
       }
     }
